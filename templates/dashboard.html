@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Willkommen, {{ current_user.username }}</h1>
+    <a href="/logout">Abmelden</a>
+    <h2>Gespeicherte Baumhöhen</h2>
+    <table border="1">
+        <tr>
+            <th>User</th>
+            <th>Breitengrad</th>
+            <th>Längengrad</th>
+            <th>Neigung (Beta)</th>
+            <th>Abstand</th>
+            <th>Höhe</th>
+            <th>Location</th>
+            <th>timestamp</th>
+        </tr>
+        {% for data in tree_data %}
+        <tr>
+            <td>{{data.user_id}}</td>
+            <td>{{ data.latitude }}</td>
+            <td>{{ data.longitude }}</td>
+            <td>{{ data.beta }}</td>
+            <td>{{ data.distance }}</td>
+            <td>{{ data.height }}</td>
+            <td>{{ data.location}}</td>
+            <td>{{ data.timestamp}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

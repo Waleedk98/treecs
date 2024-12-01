@@ -8,28 +8,36 @@
 <body>
     <h1>Willkommen, {{ current_user.username }}</h1>
     <a href="/logout">Abmelden</a>
-    <h2>Gespeicherte Baumhöhen</h2>
+    <h2>Gespeicherte Baumdaten</h2>
     <table border="1">
         <tr>
-            <th>User</th>
+            <th>Benutzer</th>
+            <th>Name des Messenden</th>
+            <th>Baumtyp</th>
+            <th>Baumhöhe (m)</th>
+            <th>Neigung (°)</th>
+            <th>Stammdurchmesser (cm)</th>
             <th>Breitengrad</th>
             <th>Längengrad</th>
-            <th>Neigung (Beta)</th>
-            <th>Abstand</th>
-            <th>Höhe</th>
-            <th>Location</th>
+            <th>Standort</th>
             <th>timestamp</th>
+           <!-- Foto  <th>Fotos</th>
+            <th>Hochgeladen am</th> -->
         </tr>
-        {% for data in tree_data %}
+        {% for data in trees %}
         <tr>
-            <td>{{data.user_id}}</td>
+            <td>{{ data.user_id }}</td>
+            <td>{{ data.measurer_name }}</td>
+            <td>{{ data.tree_type }}</td>
+            <td>{{ data.tree_height }}</td>
+            <td>{{ data.inclination }}</td>
+            <td>{{ data.trunk_diameter }}</td>
             <td>{{ data.latitude }}</td>
             <td>{{ data.longitude }}</td>
-            <td>{{ data.beta }}</td>
-            <td>{{ data.distance }}</td>
-            <td>{{ data.height }}</td>
-            <td>{{ data.location}}</td>
-            <td>{{ data.timestamp}}</td>
+            <td>{{ data.address }}</td>
+            <td>{{ data.timestamp }}</td>
+            
+            
         </tr>
         {% endfor %}
     </table>

@@ -7,31 +7,52 @@
     <script src="/static/script.js" defer></script>
 </head>
 <body>
-    <h1>Baumhöhe mit Smartphone-Sensoren berechnen</h1>
+    <h1>Baumdaten erfassen</h1>
     
-    <!-- Formular für manuelle Eingabe der Daten -->
-    <form id="sensorForm">
+    <!-- Formular zur Eingabe der Baumdaten -->
+    <form id="treeDataForm">
+        <!-- Name des Messers -->
+        <label for="measurerName">Name des Messers:</label>
+        <input type="text" id="measurerName" placeholder="Anonymous"><br><br>
+
+        <!-- Baumtyp -->
+        <label for="treeType">Baumtyp:</label>
+        <input type="text" id="treeType" required><br><br>
+
+        <!-- Baumhöhe -->
+        <label for="treeHeight">Baumhöhe (m):</label>
+        <input type="number" id="treeHeight" step="1" min="1" required><br><br>
+
+        <!-- Neigung -->
+        <label for="inclination">Neigung (Grad):</label>
+        <input type="number" id="inclination" step="1" min="0" max="90" required><br><br>
+
+        <!-- Stammdurchmesser -->
+        <label for="trunkDiameter">Stammdurchmesser (cm):</label>
+        <input type="number" id="trunkDiameter" step="1" min="1" required><br><br>
+
+
+        <!-- Standort -->
+        <h2>Standort</h2>
         <label for="latitude">Breitengrad:</label>
         <input type="number" id="latitude" step="any" required><br><br>
 
         <label for="longitude">Längengrad:</label>
         <input type="number" id="longitude" step="any" required><br><br>
 
-        <label for="beta">Neigung (beta) in Grad:</label>
-        <input type="number" id="beta" step="any" required><br><br>
+        <p id="location">Adresse: Dein Standort wird hier angezeigt...</p><br><br>
 
-        <label for="distance">Abstand zum Baum (Meter):</label>
-        <input type="number" id="distance" required><br><br>
+        <!-- Foto-Upload -->
+        <label for="treePhotos">Baumfotos hochladen (2 Bilder erforderlich):</label>
+        <input type="file" id="treePhotos" accept="image/*" multiple required><br><br>
 
-        <button type="submit">Berechnen</button>
+        <button type="submit">Daten speichern</button> 
     </form>
 
     <p id="result"></p>
-    
-    <!-- Bereich für den Standort -->
-    <h2>Dein Standort</h2>
-    <p id="location">Dein Standort wird hier angezeigt...</p>
+
     <a href="/dashboard">Zum Dashboard</a>
 
+    
 </body>
 </html>

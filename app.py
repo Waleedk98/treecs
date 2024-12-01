@@ -2,10 +2,9 @@ from flask import Flask, request, jsonify, render_template, redirect, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-import math
-import requests
 from datetime import datetime
-import logging
+from extensions import db, bcrypt
+from models import db, bcrypt, User, Tree, TreePhoto  # Importiere Modelle und Datenbank
 
 # Konfiguration und Setup
 app = Flask(__name__)
@@ -14,27 +13,10 @@ app.secret_key = 'test'  # Sicherer Schlüssel für Sitzungen
 # Datenbank-Konfiguration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+db.init_app(app)
+bcrypt.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
-# Datenbank-Modelle
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-
-class SensorData(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
-    beta = db.Column(db.Float, nullable=False)
-    distance = db.Column(db.Float, nullable=False)
-    height = db.Column(db.Float, nullable=False)
-    location = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 # Login-Manager
 @login_manager.user_loader
@@ -45,14 +27,18 @@ def load_user(user_id):
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        username = request.form.get("username")
+        uname = request.form.get("uname")
         password = request.form.get("password")
+        email = request.form.get("email")
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
-        if User.query.filter_by(username=username).first():
+        if User.query.filter_by(uname=uname).first():
             return "Benutzername existiert bereits", 400
+        
+        if User.query.filter_by(email=email).first():
+            return "E-Mail existiert bereits", 400
 
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(uname=uname, password=hashed_password, email=email)
         db.session.add(new_user)
         db.session.commit()
         return redirect("/login")
@@ -62,9 +48,25 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form.get("username")
+        account_type = request.form.get("account_type")
+        if account_type == "Guest":
+            # Gastbenutzer erstellen
+            guest_user = User(
+                uname="Anonymous",
+                password="guest",  # Dummy-Passwort
+                email = "guest@gmail.com" # Dummy-Mail
+                
+            )
+            db.session.add(guest_user)
+            db.session.commit()
+            login_user(guest_user)
+            session["user_id"] = guest_user.id
+            return redirect("/")
+        
+        # Standardbenutzeranmeldung
+        uname = request.form.get("username")
         password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(uname=uname).first()
 
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
@@ -72,6 +74,7 @@ def login():
             return redirect("/")
         return "Ungültige Anmeldedaten", 401
     return render_template("login.html")
+
 
 # Logout
 @app.route("/logout")
@@ -86,52 +89,39 @@ def logout():
 def home():
     return render_template("index.html")
 
-# Route, um Sensor-Daten zu empfangen und zu speichern
-@app.route("/submit_sensor_data", methods=["POST"])
+# Route, um Baumdaten zu empfangen und zu speichern
+@app.route("/submit_tree_data", methods=["POST"])
 @login_required
-def submit_sensor_data():
+def submit_tree_data():
     data = request.json
 
     # Überprüfen, ob alle erforderlichen Daten vorhanden sind
-    if not all([data.get("latitude"), data.get("longitude"), data.get("beta"), data.get("distance"), data.get("location")]):
+    required_fields = ["tree_type", "tree_height", "inclination", "trunk_diameter", "latitude", "longitude", "address"]
+    if not all([data.get(field) for field in required_fields]):
         return jsonify({"error": "Fehlende Daten"}), 400
 
-    latitude = data.get("latitude")
-    longitude = data.get("longitude")
-    beta = data.get("beta")
-    distance = data.get("distance")
-    location = data.get("location")  # Standort aus der Anfrage
-
-    # Umrechnung von Grad in Radiant
-    beta_radians = math.radians(beta)
-
-    # Berechnung der Baumhöhe
-    height = distance * math.tan(beta_radians)
-
-# Baumhöhe und Standort in der Datenbank speichern
-    tree_data = SensorData(
+    trees = Tree(
         user_id=current_user.id,
-        latitude=latitude,
-        longitude=longitude,
-        location=location,  # Speichern der korrekten Adresse
-        height=round(height, 2),
-        beta=beta,  # Hinzufügen des Winkels
-        distance=distance,  # Speichern der Entfernung
-        timestamp=datetime.now()
+        tree_type=data.get("tree_type"),
+        tree_height=data.get("tree_height"),
+        inclination=data.get("inclination"),
+        trunk_diameter=data.get("trunk_diameter"),
+        latitude=data.get("latitude"),
+        longitude=data.get("longitude"),
+        address=data.get("address")
     )
-    db.session.add(tree_data)
+
+    db.session.add(trees)
     db.session.commit()
 
-    # Antwort an den Client
-    return jsonify({"height": round(height, 2)})    
+    return jsonify({"message": "Baumdaten erfolgreich gespeichert"})
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Hole ALLE Einträge aus der SensorData-Tabelle
-    tree_data = SensorData.query.all()
-    return render_template('dashboard.html', tree_data=tree_data, current_user=current_user)
-
+    # Hole ALLE Einträge aus der Tree-Tabelle
+    trees = Tree.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', trees=trees, current_user=current_user)
 
 # Hauptprogramm
 if __name__ == "__main__":

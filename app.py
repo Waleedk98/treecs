@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import joinedload
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from datetime import datetime
@@ -119,10 +120,15 @@ def submit_tree_data():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Hole ALLE Einträge aus der Tree-Tabelle
-    trees = Tree.query.filter_by(user_id=current_user.id).all()
+    # Lade alle Bäume des aktuellen Nutzers und füge die User-Daten hinzu
+    trees = (
+        Tree.query
+        .filter_by(user_id=current_user.id)
+        .options(joinedload(Tree.user))  # Verbinde die User-Daten mit Tree-Daten
+        .all()
+    )
+    
     return render_template('dashboard.html', trees=trees, current_user=current_user)
-
 # Hauptprogramm
 if __name__ == "__main__":
     with app.app_context():

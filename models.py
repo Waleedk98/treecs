@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     uname = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
+    verified = db.Column(db.Boolean, default = False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Beziehungen

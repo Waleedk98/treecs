@@ -63,20 +63,29 @@ def register():
 def login():
     if request.method == "POST":
         account_type = request.form.get("account_type")
-        
+
         if account_type == "Guest":
-            # Gastbenutzer erstellen
-            guest_user = User(
-                uname="Anonymous",
-                password="guest",  # Dummy-Passwort
-                email="guest@gmail.com"  # Dummy-E-Mail
-            )
-            db.session.add(guest_user)
-            db.session.commit()
+            # Überprüfen, ob ein Gastbenutzer bereits existiert
+            guest_user = User.query.filter_by(uname="Anonymous").first()
+            
+            if not guest_user:
+                # Gastbenutzer erstellen, falls nicht vorhanden
+                guest_user = User(
+                    uname="Anonymous",
+                    password=bcrypt.generate_password_hash("guest").decode('utf-8'),  # Dummy-Passwort sicher speichern
+                    salt="dummy_salt",  # Dummy-Wert für Salt
+                    email="guest@gmail.com",  # Dummy-E-Mail
+                    verified=False,  # Optional, falls in Ihrem Modell vorhanden
+                    created_at=datetime.utcnow()  # Falls ein Erstellungsdatum erforderlich ist
+                )
+                db.session.add(guest_user)
+                db.session.commit()
+            
+            # Gastbenutzer anmelden
             login_user(guest_user)
             session["user_id"] = guest_user.id
             return redirect("/")
-        
+
         # Standardbenutzeranmeldung
         uname = request.form.get("username")
         password = request.form.get("password")
@@ -91,10 +100,11 @@ def login():
                 login_user(user)
                 session["user_id"] = user.id
                 return redirect("/")
-        
+
         return "Ungültige Anmeldedaten", 401
 
     return render_template("login.html")
+
 
 
 

@@ -6,6 +6,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from datetime import datetime
 from extensions import db, bcrypt
 from models import db, bcrypt, User, Tree, TreePhoto  # Importiere Modelle und Datenbank
+import os
 
 # Konfiguration und Setup
 app = Flask(__name__)
@@ -19,6 +20,7 @@ bcrypt.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+
 # Login-Manager
 @login_manager.user_loader
 def load_user(user_id):
@@ -31,32 +33,43 @@ def register():
         uname = request.form.get("uname")
         password = request.form.get("password")
         email = request.form.get("email")
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
+        # Überprüfen, ob Benutzername oder E-Mail bereits existiert
         if User.query.filter_by(uname=uname).first():
             return "Benutzername existiert bereits", 400
         
         if User.query.filter_by(email=email).first():
             return "E-Mail existiert bereits", 400
 
-        new_user = User(uname=uname, password=hashed_password, email=email)
+        # Salt generieren
+        salt = User.generate_salt()
+
+        # Passwort mit Salt kombinieren und hashen
+        salted_password = password + salt
+        hashed_password = bcrypt.generate_password_hash(salted_password).decode("utf-8")
+
+        # Neuen Benutzer erstellen
+        new_user = User(uname=uname, password=hashed_password, salt=salt, email=email)
         db.session.add(new_user)
         db.session.commit()
+
         return redirect("/login")
+
     return render_template("register.html")
+
 
 # Login
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         account_type = request.form.get("account_type")
+        
         if account_type == "Guest":
             # Gastbenutzer erstellen
             guest_user = User(
                 uname="Anonymous",
                 password="guest",  # Dummy-Passwort
-                email = "guest@gmail.com" # Dummy-Mail
-                
+                email="guest@gmail.com"  # Dummy-E-Mail
             )
             db.session.add(guest_user)
             db.session.commit()
@@ -69,12 +82,20 @@ def login():
         password = request.form.get("password")
         user = User.query.filter_by(uname=uname).first()
 
-        if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user)
-            session["user_id"] = user.id
-            return redirect("/")
+        if user:
+            # Passwort mit Salt kombinieren
+            salted_password = password + user.salt
+
+            # Passwort überprüfen
+            if bcrypt.check_password_hash(user.password, salted_password):
+                login_user(user)
+                session["user_id"] = user.id
+                return redirect("/")
+        
         return "Ungültige Anmeldedaten", 401
+
     return render_template("login.html")
+
 
 
 # Logout

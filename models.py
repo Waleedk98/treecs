@@ -12,13 +12,26 @@ class User(db.Model, UserMixin):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uname = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(150), nullable=False)
+    password = db.Column(db.String(150), nullable=False)  # Speichert den gehashten Wert
+    salt = db.Column(db.String(32), nullable=False)       # Speichert den Salt-Wert als hex-String
     email = db.Column(db.String(150), unique=True, nullable=False)
-    verified = db.Column(db.Boolean, default = False)
+    verified = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+    
     # Beziehungen
     trees = db.relationship('Tree', backref='user', lazy=True)
+    
+    @staticmethod
+    def generate_salt():
+        """Generiert einen zufälligen Salt-Wert."""
+        import os
+        return os.urandom(16).hex()
+
+    def __repr__(self):
+        return f"<User id={self.id} uname={self.uname} email={self.email}>"
+
+    
+   
 
 
 class Tree(db.Model):

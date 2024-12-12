@@ -28,4 +28,22 @@
     </tr>
     </thead>
     <tbody>
-    {% for data in trees
+    {% for data in trees %}
+    <tr>
+        <td>{{ data.user.uname }}</td>
+        <td>{{ data.user.verified }}</td>
+        <td>{{ data.measurer_name }}</td>
+        <td>{{ data.tree_type }}</td>
+        <td>{{ data.tree_height }}</td>
+        <td>{{ data.inclination }}</td>
+        <td>{{ data.trunk_diameter }}</td>
+        <td>{{ data.latitude }}</td>
+        <td>{{ data.longitude }}</td>
+        <td>{{ data.address }}</td>
+        <td>{{ data.timestamp }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

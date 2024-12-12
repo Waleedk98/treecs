@@ -1,51 +1,23 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anmeldung</title>
-</head>
-<body>
-    <h1>Anmeldung</h1>
-    <form method="POST" action="/login">
-        <label for="account_type">Kontotyp:</label>
-        <select id="account_type" name="account_type">
-            <option value="User">User</option>
-            <option value="Guest">Gast</option>
-        </select><br><br>
+<form method="POST" action="/login">
+    <label for="account_type">Kontotyp:</label>
+    <select id="account_type" name="account_type" class="form-select">
+        <option value="User">User</option>
+        <option value="Guest">Gast</option>
+    </select>
 
-        <div id="user_fields">
-            <label for="username">Benutzername:</label>
-            <input type="text" id="username" name="username"><br><br>
+    <div id="user_fields">
+        <label for="username">Benutzername:</label>
+        <input type="text" id="username" name="username" class="form-control">
 
-            <label for="password">Passwort:</label>
-            <input type="password" id="password" name="password"><br><br>
-        </div>
+        <label for="password">Passwort:</label>
+        <input type="password" id="password" name="password" class="form-control">
+    </div>
 
-        <div id="guest_fields" style="display: none;">
-            <label for="guest_name">Gastname (optional):</label>
-            <input type="text" id="guest_name" name="guest_name"><br><br>
-        </div>
+    <div id="guest_fields" style="display: none;">
+        <label for="guest_name">Gastname (optional):</label>
+        <input type="text" id="guest_name" name="guest_name" class="form-control">
+    </div>
 
-        <button type="submit">Anmelden</button>
-    </form>
-    <a href="/register">Zum Registrieren</a>
-
-    <script>
-        // Logik für das Umschalten zwischen Benutzer- und Gastfeldern
-        const accountType = document.getElementById("account_type");
-        const userFields = document.getElementById("user_fields");
-        const guestFields = document.getElementById("guest_fields");
-
-        accountType.addEventListener("change", function() {
-            if (accountType.value === "Guest") {
-                userFields.style.display = "none";
-                guestFields.style.display = "block";
-            } else {
-                userFields.style.display = "block";
-                guestFields.style.display = "none";
-            }
-        });
-    </script>
-</body>
-</html>
+    <button type="submit" class="btn btn-primary">Anmelden</button>
+</form>
+<a href="/register">Zum Registrieren</a>

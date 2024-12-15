@@ -1,65 +1,47 @@
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
+# models.py
+from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
+import os
+import random
+import string
 
-db = SQLAlchemy()
-bcrypt = Bcrypt()
-
-# Datenbank-Modelle
-class User(db.Model, UserMixin):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uname = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(150), nullable=False)  # Speichert den gehashten Wert
-    salt = db.Column(db.String(32), nullable=False)       # Speichert den Salt-Wert als hex-String
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    verified = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Beziehungen
-    trees = db.relationship('Tree', backref='user', lazy=True)
-    
-    @staticmethod
-    def generate_salt():
-        """Generiert einen zufälligen Salt-Wert."""
-        import os
-        return os.urandom(16).hex()
-
-    def __repr__(self):
-        return f"<User id={self.id} uname={self.uname} email={self.email}>"
-
-    
-   
-
-
-class Tree(db.Model):
-    __tablename__ = 'trees'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    tree_type = db.Column(db.String(100), nullable=False)
-    tree_height = db.Column(db.Integer, nullable=False)
-    inclination = db.Column(db.Integer, nullable=False)
-    trunk_diameter = db.Column(db.Integer, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    latitude = db.Column(db.Numeric(10, 8), nullable=False)
-    longitude = db.Column(db.Numeric(11, 8), nullable=False)
-    address = db.Column(db.String(255), nullable=True)
-
-    # Beziehungen
-    photos = db.relationship('TreePhoto', backref='tree', lazy=True)
-
-
-class TreePhoto(db.Model):
-    __tablename__ = 'tree_photos'
-
+# User Modell
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    tree_id = db.Column(db.Integer, db.ForeignKey('trees.id'), nullable=False)  # Referenz zur 'trees' Tabelle
-    photo_path = db.Column(db.String(255), nullable=True)
-    photo_blob = db.Column(db.LargeBinary, nullable=True)
-    photo_metadata = db.Column(db.Text, nullable=True)
+    uname = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    salt = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return f"<TreePhoto id={self.id} tree_id={self.tree_id}>"
+    # Methode zum Generieren eines Salts
+    @staticmethod
+    def generate_salt(length=16):
+        return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+# Tree Modell
+class Tree(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tree_type = db.Column(db.String(100), nullable=False)
+    tree_height = db.Column(db.Float, nullable=False)
+    inclination = db.Column(db.Float, nullable=False)
+    trunk_diameter = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Beziehung
+    user = db.relationship('User', backref=db.backref('trees', lazy=True))
+
+# TreePhoto Modell (Optional, falls benötigt)
+class TreePhoto(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tree_id = db.Column(db.Integer, db.ForeignKey('tree.id'), nullable=False)
+    photo_path = db.Column(db.String(300), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Beziehung
+    tree = db.relationship('Tree', backref=db.backref('photos', lazy=True))

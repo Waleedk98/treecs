@@ -1,5 +1,7 @@
 # models.py
-from extensions import db
+from flask_sqlalchemy import SQLAlchemy
+from extensions import db, Bcrypt
+from config import Config, DevelopmentConfig, ProductionConfig
 from flask_login import UserMixin
 from datetime import datetime
 import random
@@ -44,6 +46,7 @@ class TreePhoto(db.Model):
 
     # Beziehung
     tree = db.relationship('Tree', backref=db.backref('photos', lazy=True))
+
 
 # Datenbank-Modelle
 class TrustLevel(db.Model):

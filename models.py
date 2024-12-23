@@ -2,11 +2,9 @@
 from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
-import os
 import random
 import string
 
-<<<<<<< HEAD
 # User Modell
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,9 +44,6 @@ class TreePhoto(db.Model):
 
     # Beziehung
     tree = db.relationship('Tree', backref=db.backref('photos', lazy=True))
-=======
-db = SQLAlchemy()
-bcrypt = Bcrypt()
 
 # Datenbank-Modelle
 class TrustLevel(db.Model):
@@ -205,4 +200,3 @@ class CommunityContribution(db.Model):
 
     def __repr__(self):
         return f"<CommunityContribution id={self.id} tree_id={self.tree_id}>"
->>>>>>> 3adc699400ec17b54af786caf3579dd1ee67664d

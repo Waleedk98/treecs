@@ -36,17 +36,17 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uname = db.Column(db.String(128), unique=True, nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
-    latitude = db.Column(db.Numeric(8, 6), nullable=False)
-    longitude = db.Column(db.Numeric(9, 6), nullable=False)
+    #latitude = db.Column(db.Numeric(8, 6), nullable=False)
+    #longitude = db.Column(db.Numeric(9, 6), nullable=False)
     verified = db.Column(db.Boolean, default=False, nullable=False)
-    trust_level_id = db.Column(db.Integer, db.ForeignKey('trust_levels.id'), nullable=False, default=1)
+    #trust_level_id = db.Column(db.Integer, db.ForeignKey('trust_levels.id'), nullable=False, default=1)
     password = db.Column(db.String(256), nullable=False)  # Gehashter Wert
     salt = db.Column(db.String(16), nullable=False)
-    xp = db.Column(db.Integer, nullable=False, default=0)
+    #xp = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Beziehungen
-    trust_level = db.relationship('TrustLevel', backref='users')
+    #trust_level = db.relationship('TrustLevel', backref='users')
     roles = db.relationship('UserRole', backref='user', lazy=True)
     trees = db.relationship('Tree', backref='initial_creator', lazy=True)
 
@@ -100,23 +100,21 @@ class Tree(db.Model):
     __tablename__ = 'trees'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    initial_creator_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    tree_type_id = db.Column(db.Integer, db.ForeignKey('tree_types.id'))
-    latitude = db.Column(db.Numeric(8, 6), nullable=False)
-    longitude = db.Column(db.Numeric(9, 6), nullable=False)
-    co2_stored = db.Column(db.Numeric(10, 2), default=0.00)
-    health_status_id = db.Column(db.Integer, db.ForeignKey('health_statuses.id'), nullable=False, default=1)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))  # Foreign key to User
+    tree_type = db.Column(db.String(255), nullable=False)  # Tree type as a string
+    tree_height = db.Column(db.Float, nullable=False)  # Height in meters
+    inclination = db.Column(db.Float, nullable=False)  # Inclination in degrees
+    trunk_diameter = db.Column(db.Float, nullable=False)  # Diameter in centimeters
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)  # When the tree was added
+    latitude = db.Column(db.Float, nullable=False)  # Latitude
+    longitude = db.Column(db.Float, nullable=False)  # Longitude
+    address = db.Column(db.String(255), nullable=True)  # Optional address
 
-    # Beziehungen
-    tree_type = db.relationship('TreeType', backref='trees')
-    health_status = db.relationship('HealthStatus', backref='trees')
-    measurements = db.relationship('Measurement', backref='tree', lazy=True)
-    photos = db.relationship('TreePhoto', backref='tree', lazy=True)
+    # Relationship to User
+    user = db.relationship('User', backref='user_trees')
 
     def __repr__(self):
-        return f"<Tree id={self.id} latitude={self.latitude} longitude={self.longitude}>"
-
+        return f"<Tree id={self.id} type={self.tree_type} height={self.tree_height}>"
 
 class Measurement(db.Model):
     __tablename__ = 'measurements'

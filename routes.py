@@ -2,8 +2,8 @@
 from flask import request, jsonify, render_template, redirect, session
 from flask_login import login_user, logout_user, login_required, current_user
 from datetime import datetime
-from models import User, Tree
-from extensions import db, bcrypt
+from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, HealthStatus, TreePhoto, CommunityContribution
+from extensions import db, bcrypt_instance
 from sqlalchemy.orm import joinedload
 
 def init_routes(app):
@@ -22,15 +22,29 @@ def init_routes(app):
             if User.query.filter_by(email=email).first():
                 return "E-Mail existiert bereits", 400
 
+            # Überprüfen, ob der TrustLevel mit ID 1 existiert, wenn nicht, erstellen
+            trust_level = TrustLevel.query.get(1)
+            if not trust_level:
+                trust_level = TrustLevel(rank="Basic", description="Standard Trust Level")
+                db.session.add(trust_level)
+                db.session.commit()
+
             # Salt generieren
             salt = User.generate_salt()
 
             # Passwort mit Salt kombinieren und hashen
             salted_password = password + salt
-            hashed_password = bcrypt.generate_password_hash(salted_password).decode("utf-8")
+            hashed_password = bcrypt_instance.generate_password_hash(salted_password).decode("utf-8")
 
-            # Neuen Benutzer erstellen
-            new_user = User(uname=uname, password=hashed_password, salt=salt, email=email)
+            # Neuen Benutzer erstellen und TrustLevel zuweisen
+            new_user = User(
+                uname=uname, 
+                password=hashed_password, 
+                salt=salt, 
+                email=email, 
+                trust_level_id=trust_level.id  # Hier wird der TrustLevel hinzugefügt
+            )
+
             db.session.add(new_user)
             db.session.commit()
 
@@ -51,10 +65,11 @@ def init_routes(app):
                     # Gastbenutzer erstellen, falls nicht vorhanden
                     guest_user = User(
                         uname="Anonymous",
-                        password=bcrypt.generate_password_hash("guest").decode('utf-8'),  # Dummy-Passwort sicher speichern
+                        password=bcrypt_instance.generate_password_hash("guest").decode('utf-8'),  # Dummy-Passwort sicher speichern
                         salt="dummy_salt",  # Dummy-Wert für Salt
                         email="guest@gmail.com",  # Dummy-E-Mail
                         verified=False,  # Optional, falls in Ihrem Modell vorhanden
+                        trust_level_id=1,  # Standard TrustLevel (ID=1)
                         created_at=datetime.utcnow()  # Falls ein Erstellungsdatum erforderlich ist
                     )
                     db.session.add(guest_user)
@@ -75,7 +90,7 @@ def init_routes(app):
                 salted_password = password + user.salt
 
                 # Passwort überprüfen
-                if bcrypt.check_password_hash(user.password, salted_password):
+                if bcrypt_instance.check_password_hash(user.password, salted_password):
                     login_user(user)
                     session["user_id"] = user.id
                     return redirect("/")

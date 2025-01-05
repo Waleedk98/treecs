@@ -36,17 +36,17 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     uname = db.Column(db.String(128), unique=True, nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
-    latitude = db.Column(db.Numeric(8, 6), nullable=False)
-    longitude = db.Column(db.Numeric(9, 6), nullable=False)
+    latitude = db.Column(db.Numeric(8, 6), nullable=False, default=50.5514)
+    longitude = db.Column(db.Numeric(9, 6), nullable=False, default=9.6748)
     verified = db.Column(db.Boolean, default=False, nullable=False)
     trust_level_id = db.Column(db.Integer, db.ForeignKey('trust_levels.id'), nullable=False, default=1)
     password = db.Column(db.String(256), nullable=False)  # Gehashter Wert
-    salt = db.Column(db.String(16), nullable=False)
+    salt = db.Column(db.String(32), nullable=False)
     xp = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Beziehungen
-    #trust_level = db.relationship('TrustLevel', backref='users')
+    trust_level = db.relationship('TrustLevel', backref='users')
     roles = db.relationship('UserRole', backref='user', lazy=True)
     trees = db.relationship('Tree', backref='initial_creator', lazy=True)
 

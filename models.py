@@ -12,7 +12,7 @@ class TrustLevel(db.Model):
     __tablename__ = 'trust_levels'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    rank = db.Column(db.String(128), nullable=False, unique=True)
+    rank = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
     def __repr__(self):

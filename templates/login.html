@@ -1,23 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tree App</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'DM Serif Text', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #e6ffe6, #ccffcc);
+            box-sizing: border-box;
+        }
+
+        form {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            padding: 40px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            background: #f9f9f9;
+            box-sizing: border-box;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            box-sizing: border-box;
+            font-family: 'DM Serif Text', serif;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: 0.9rem;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            color: #4CAF50;
+        }
+
+        .logo {
+            margin: 0 auto;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .logo img {
+            max-width: 150px;
+            max-height: 150px;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
 <form method="POST" action="/login">
+    <div class="logo">
+        <img src="{{ url_for('static', filename='img/treecs_logo.png') }}"
+             alt="Tree App Logo"
+             style="display: block; margin: 0 auto; max-width: 150px; max-height: 150px;">
+    </div>
+    <h2>Willkommen bei der<br> Tree App</h2>
     <label for="account_type">Kontotyp:</label>
-    <select id="account_type" name="account_type" class="form-select">
+    <select id="account_type" name="account_type" class="form-select" onchange="toggleFields()">
         <option value="User">User</option>
         <option value="Guest">Gast</option>
     </select>
 
     <div id="user_fields">
         <label for="username">Benutzername:</label>
-        <input type="text" id="username" name="username" class="form-control">
+        <input type="text" id="username" name="username" class="form-control" placeholder="Benutzername eingeben">
 
         <label for="password">Passwort:</label>
-        <input type="password" id="password" name="password" class="form-control">
+        <input type="password" id="password" name="password" class="form-control" placeholder="Passwort eingeben">
     </div>
 
-    <div id="guest_fields" style="display: none;">
+    <div id="guest_fields">
         <label for="guest_name">Gastname (optional):</label>
-        <input type="text" id="guest_name" name="guest_name" class="form-control">
+        <input type="text" id="guest_name" name="guest_name" class="form-control" placeholder="Gastname eingeben">
     </div>
 
     <button type="submit" class="btn btn-primary">Anmelden</button>
+    <a href="/register">Zum Registrieren</a>
 </form>
-<a href="/register">Zum Registrieren</a>
+
+<script>
+    function toggleFields() {
+        const accountType = document.getElementById('account_type').value;
+        const userFields = document.getElementById('user_fields');
+        const guestFields = document.getElementById('guest_fields');
+
+        if (accountType === 'Guest') {
+            userFields.style.display = 'none';
+            guestFields.style.display = 'block';
+        } else {
+            userFields.style.display = 'block';
+            guestFields.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>

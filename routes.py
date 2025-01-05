@@ -138,13 +138,11 @@ def init_routes(app):
 
     @app.route('/dashboard')
     @login_required
-    def dashboard():
-        # Lade alle Bäume des aktuellen Nutzers und füge die User-Daten hinzu
-        trees = (
-            Tree.query
-            .filter_by(user_id=current_user.id)
-            .options(joinedload(Tree.user))  # Verbinde die User-Daten mit Tree-Daten
-            .all()
-        )
+    def dashboard():# Fetch trees associated with the current user
+      trees = (
+        Tree.query
+        .filter_by(user_id=current_user.id)  # Filter trees by the logged-in user's ID
+        .all()
+    )
 
-        return render_template('dashboard.html', trees=trees, current_user=current_user)
+      return render_template('dashboard.html', trees=trees, current_user=current_user)

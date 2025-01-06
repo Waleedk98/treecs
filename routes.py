@@ -118,57 +118,64 @@ def init_routes(app):
     @app.route("/submit_tree_data", methods=["POST"])
     @login_required
     def submit_tree_data():
-        data = request.json
+        # Use request.form for data coming from an HTML form
+        tree_type = request.form.get("tree_type")
+        tree_height = request.form.get("tree_height")
+        inclination = request.form.get("inclination")
+        trunk_diameter = request.form.get("trunk_diameter")
+        latitude = request.form.get("latitude")
+        longitude = request.form.get("longitude")
+        address = request.form.get("address")
 
-        # Überprüfen, ob alle erforderlichen Daten vorhanden sind
-        required_fields = ["tree_type", "tree_height", "inclination", "trunk_diameter", "latitude", "longitude", "address"]
-        if not all([data.get(field) for field in required_fields]):
-            return jsonify({"error": "Fehlende Daten"}), 400
+        # Validate required fields
+        required_fields = [tree_type, tree_height, inclination, trunk_diameter, latitude, longitude, address]
+        if not all(required_fields):
+            return jsonify({"error": "Fehlende Daten. Bitte alle Felder ausfüllen."}), 400
 
-        
-        userTree = Tree(
-            user_id=current_user.id,
-            tree_type=data.get("tree_type"),
-            tree_height=data.get("tree_height"),
-            inclination=data.get("inclination"),
-            trunk_diameter=data.get("trunk_diameter"),
-            latitude=data.get("latitude"),
-            longitude=data.get("longitude"),
-            address=data.get("address")
-        )
+        try:
+            # Create new Tree object
+            newTree = Tree(
+                user_id=current_user.id,
+                tree_type=tree_type,
+                tree_height=float(tree_height),
+                inclination=float(inclination),
+                trunk_diameter=float(trunk_diameter),
+                latitude=float(latitude),
+                longitude=float(longitude),
+                address=address or "Unbekannter Standort",  # Default address if none provided
+                
+            )
 
-        db.session.add(userTree)
-        db.session.commit()
-        
-        userMeasurement = Measurement(
-            user_id=current_user.id,
-            tree_id=userTree.id,
-            #measurerName=data.get("measurerName"),
-            suspected_tree_type=data.get("tree_type"),
-            height=data.get("tree_height"),
-            inclination=data.get("inclination"),
-            trunk_diameter=data.get("trunk_diameter"),
+            # Save to database
+            db.session.add(newTree)
+            db.session.commit()
             
-        )
-        
-        db.session.add(userMeasurement)
-        db.session.commit()
-        
-        # Benutzer-XP aktualisieren
-        user = User.query.get(current_user.id)  # Benutzer aus der Datenbank holen
-        if user:
-            user.xp = (user.xp or 0) + 5  # 5 XP hinzufügen
+            newMeasurement = Measurement (
+                 user_id=current_user.id,
+                 tree_id=newTree.id,
+                 suspected_tree_type=tree_type,
+                 height=float(tree_height),
+                 inclination=float(inclination),
+                 trunk_diameter=float(trunk_diameter),
+             )  
+            
+            db.session.add(newMeasurement)
             db.session.commit()
 
-        return jsonify({"message": "Baumdaten erfolgreich gespeichert"})
+            return jsonify({"message": "Baumdaten erfolgreich gespeichert"}), 201
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": f"Es ist ein Fehler aufgetreten: {str(e)}"}), 500
 
     @app.route('/dashboard')
     @login_required
-    def dashboard():# Fetch trees associated with the current user
-      trees = (
-        Tree.query
-        .filter_by(user_id=current_user.id)  # Filter trees by the logged-in user's ID
-        .all()
-    )
+    def dashboard():
+        # Fetch trees associated with the current user
+        trees = (
+            Tree.query
+            .filter_by(user_id=current_user.id)  # Filter trees by the logged-in user's ID
+            .all()
+        )
 
-      return render_template('dashboard.html', trees=trees, current_user=current_user)
+        return render_template('dashboard.html', trees=trees, current_user=current_user)

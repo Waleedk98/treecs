@@ -5,7 +5,7 @@
             "server": "localhost",
             "port": 5433,
             "driver": "PostgreSQL",
-            "name": "tree",
+            "name": "Tree",
             "database": "Tree",
             "username": "postgres"
         }

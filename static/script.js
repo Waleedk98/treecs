@@ -33,8 +33,8 @@ document.getElementById("treeDataForm").addEventListener("submit", async functio
     console.log("Daten:", { treeType, treeHeight, inclination, trunkDiameter, latitude, longitude });
 
     // Standort-Adresse abrufen
-    const address = await getAddressFromCoordinates(latitude, longitude);
-    document.getElementById("location").innerText = "Standort: " + address;
+    //const address = await getAddressFromCoordinates(latitude, longitude);
+    //document.getElementById("location").innerText = "Standort: " + address;
 
     // Daten an den Flask-Server senden
     fetch('/submit_tree_data', {
@@ -48,7 +48,7 @@ document.getElementById("treeDataForm").addEventListener("submit", async functio
             trunk_diameter: trunkDiameter,
             latitude: latitude,
             longitude: longitude,
-            address: address // Übergabe der korrekten Adresse
+            //address: address // Übergabe der korrekten Adresse
         })
     })
     .then(response => response.json())

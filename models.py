@@ -23,7 +23,7 @@ class AccountType(db.Model):
     __tablename__ = 'account_types'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    type_name = db.Column(db.String(128), nullable=False, unique=True)
+    type_name = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
     def __repr__(self):

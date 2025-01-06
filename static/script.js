@@ -22,6 +22,7 @@ document.getElementById("treeDataForm").addEventListener("submit", async functio
     event.preventDefault();
 
     // Eingabewerte aus dem Formular abrufen
+    //const measurerName = document.getElementById("measurerName").value;
     const treeType = document.getElementById("treeType").value;
     const treeHeight = parseInt(document.getElementById("treeHeight").value);
     const inclination = parseInt(document.getElementById("inclination").value);
@@ -40,6 +41,7 @@ document.getElementById("treeDataForm").addEventListener("submit", async functio
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+            //measurerName:measurerName,
             tree_type: treeType,
             tree_height: treeHeight,
             inclination: inclination,

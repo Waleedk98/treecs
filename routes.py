@@ -125,7 +125,8 @@ def init_routes(app):
         if not all([data.get(field) for field in required_fields]):
             return jsonify({"error": "Fehlende Daten"}), 400
 
-        trees = Tree(
+        
+        userTree = Tree(
             user_id=current_user.id,
             tree_type=data.get("tree_type"),
             tree_height=data.get("tree_height"),
@@ -136,8 +137,28 @@ def init_routes(app):
             address=data.get("address")
         )
 
-        db.session.add(trees)
+        db.session.add(userTree)
         db.session.commit()
+        
+        userMeasurement = Measurement(
+            user_id=current_user.id,
+            tree_id=userTree.id,
+            #measurerName=data.get("measurerName"),
+            suspected_tree_type=data.get("tree_type"),
+            height=data.get("tree_height"),
+            inclination=data.get("inclination"),
+            trunk_diameter=data.get("trunk_diameter"),
+            
+        )
+        
+        db.session.add(userMeasurement)
+        db.session.commit()
+        
+        # Benutzer-XP aktualisieren
+        user = User.query.get(current_user.id)  # Benutzer aus der Datenbank holen
+        if user:
+            user.xp = (user.xp or 0) + 5  # 5 XP hinzufügen
+            db.session.commit()
 
         return jsonify({"message": "Baumdaten erfolgreich gespeichert"})
 

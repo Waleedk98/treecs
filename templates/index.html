@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baumhöhe berechnen</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         body {
             font-family: 'DM Serif Text', serif;
             margin: 0;
-            padding: 20px; /* Adds space around the entire page */
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -28,11 +29,11 @@
 
         form {
             background: #fff;
-            border-radius: 15px; /* Rounded corners */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Softer shadow */
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 500px;
-            padding: 40px; /* Increased padding inside the form */
+            padding: 40px;
             margin-bottom: 20px;
             box-sizing: border-box;
         }
@@ -43,15 +44,15 @@
             align-items: center;
             font-size: 1rem;
             color: #333;
-            margin-bottom: 10px; /* Space between label and input */
+            margin-bottom: 10px;
         }
 
         input {
             width: 100%;
-            padding: 12px; /* Padding inside input fields */
-            margin-bottom: 20px; /* Equal space between input fields */
+            padding: 12px;
+            margin-bottom: 20px;
             border: 1px solid #ccc;
-            border-radius: 8px; /* Rounded corners for inputs */
+            border-radius: 8px;
             font-size: 1rem;
             background: #f9f9f9;
             box-sizing: border-box;
@@ -64,7 +65,7 @@
             color: #fff;
             background-color: #4CAF50;
             border: none;
-            border-radius: 8px; /* Rounded corners for the button */
+            border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
             box-sizing: border-box;
@@ -115,66 +116,128 @@
             z-index: 1000;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-<h1>Baumdaten erfassen</h1>
-<form id="treeDataForm">
-    <label for="measurerName">
-        Name des Messers:
-        <span class="info-icon" data-tooltip="Name des Messers eingeben (optional).">i</span>
-    </label>
-    <input type="text" id="measurerName" placeholder="Anonymous">
+    <h1>Baumdaten erfassen</h1>
 
-    <label for="treeType">
-        Baumtyp:
-        <span class="info-icon" data-tooltip="Geben Sie den Baumtyp ein (z. B. Eiche, Ahorn).">i</span>
-    </label>
-    <input type="text" id="treeType" required>
+    <!-- Form for Tree Data -->
+    <form id="treeDataForm" method="POST" action="/submit_tree_data">
+        <label for="measurerName">
+            Name des Messers:
+            <span class="info-icon" data-tooltip="Name des Messers eingeben (optional).">i</span>
+        </label>
+        <input type="text" id="measurerName" placeholder="Anonymous">
 
-    <label for="treeHeight">
-        Baumhöhe (m):
-        <span class="info-icon" data-tooltip="Baumhöhe in Metern eingeben.">i</span>
-    </label>
-    <input type="number" id="treeHeight" step="1" min="1" required>
+        <label for="treeType">
+            Baumtyp:
+            <span class="info-icon" data-tooltip="Geben Sie den Baumtyp ein (z. B. Eiche, Ahorn).">i</span>
+        </label>
+        <input type="text" id="treeType" name="tree_type" required>
 
-    <label for="inclination">
-        Neigung (Grad):
-        <span class="info-icon" data-tooltip="Geben Sie die Neigung in Grad ein (0 bis 90 Grad).">i</span>
-    </label>
-    <input type="number" id="inclination" step="1" min="0" max="90" required>
+        <label for="treeHeight">
+            Baumhöhe (m):
+            <span class="info-icon" data-tooltip="Baumhöhe in Metern eingeben.">i</span>
+        </label>
+        <input type="number" id="treeHeight" name="tree_height" step="1" min="1" required>
 
-    <label for="trunkDiameter">
-        Stammdurchmesser (cm):
-        <span class="info-icon" data-tooltip="Durchmesser des Stamms in Zentimetern eingeben.">i</span>
-    </label>
-    <input type="number" id="trunkDiameter" step="1" min="1" required>
+        <label for="inclination">
+            Neigung (Grad):
+            <span class="info-icon" data-tooltip="Geben Sie die Neigung in Grad ein (0 bis 90 Grad).">i</span>
+        </label>
+        <input type="number" id="inclination" name="inclination" step="1" min="0" max="90" required>
 
-    <h2>Standort</h2>
-    <label for="latitude">
-        Breitengrad:
-        <span class="info-icon" data-tooltip="Geben Sie den Breitengrad des Standorts ein.">i</span>
-    </label>
-    <input type="number" id="latitude" step="any" required>
+        <label for="trunkDiameter">
+            Stammdurchmesser (cm):
+            <span class="info-icon" data-tooltip="Durchmesser des Stamms in Zentimetern eingeben.">i</span>
+        </label>
+        <input type="number" id="trunkDiameter" name="trunk_diameter" step="1" min="1" required>
 
-    <label for="longitude">
-        Längengrad:
-        <span class="info-icon" data-tooltip="Geben Sie den Längengrad des Standorts ein.">i</span>
-    </label>
-    <input type="number" id="longitude" step="any" required>
+        <h2>Standort</h2>
+        <div id="map"></div>
 
-    <p id="location">Adresse: Dein Standort wird hier angezeigt...</p>
+        <!-- Hidden fields for latitude, longitude, and address -->
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
+        <input type="hidden" id="address" name="address">
 
-    <label for="treePhotos">
-        Baumfotos hochladen (2 Bilder erforderlich):
-        <span class="info-icon" data-tooltip="Laden Sie mindestens 2 Fotos des Baums hoch.">i</span>
-    </label>
-    <input type="file" id="treePhotos" accept="image/*" multiple required>
+        <label for="treePhotos">
+            Baumfotos hochladen (2 Bilder erforderlich):
+            <span class="info-icon" data-tooltip="Laden Sie mindestens 2 Fotos des Baums hoch.">i</span>
+        </label>
+        <input type="file" id="treePhotos" name="tree_photos" accept="image/*" multiple required>
 
-    <button type="submit">Daten speichern</button>
-</form>
+        <button type="submit">Daten speichern</button>
+    </form>
 
-<p id="result"></p>
-<a href="/dashboard">Zum Dashboard</a>
+    <a href="/dashboard">Zum Dashboard</a>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        let map, marker;
+
+        // Initialize the map
+        function initMap() {
+            map = L.map('map').setView([50.1109, 8.6821], 13); // Default to Frankfurt, Germany
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+
+            // Add a click event listener to place a marker
+            map.on('click', function (e) {
+                const { lat, lng } = e.latlng;
+
+                // Place or update the marker
+                if (marker) {
+                    marker.setLatLng([lat, lng]);
+                } else {
+                    marker = L.marker([lat, lng]).addTo(map);
+                }
+
+                // Update hidden input fields for latitude and longitude
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+
+                // Get the address from the coordinates
+                getAddressFromCoordinates(lat, lng);
+            });
+        }
+
+        // Function to get address from coordinates
+        function getAddressFromCoordinates(lat, lng) {
+            const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Check if the address is available in the response
+                    if (data && data.address) {
+                        const address = `${data.address.road || ''} ${data.address.suburb || ''} ${data.address.city || ''} ${data.address.country || ''}`.trim();
+                        
+                        // Update the hidden address input field
+                        document.getElementById('address').value = address;
+                    } else {
+                        // If no address found, set a default value
+                        document.getElementById('address').value = 'Unbekannter Standort';
+                    }
+                })
+                .catch(error => {
+                    console.error('Fehler bei der Adresseermittlung:', error);
+                    document.getElementById('address').value = 'Unbekannter Standort';
+                });
+        }
+
+        // Initialize the map when the page loads
+        window.onload = initMap;
+    </script>
 </body>
 </html>

@@ -22,6 +22,7 @@ document.getElementById("treeDataForm").addEventListener("submit", async functio
     event.preventDefault();
 
     // Eingabewerte aus dem Formular abrufen
+    //const measurerName = document.getElementById("measurerName").value;
     const treeType = document.getElementById("treeType").value;
     const treeHeight = parseInt(document.getElementById("treeHeight").value);
     const inclination = parseInt(document.getElementById("inclination").value);
@@ -32,21 +33,22 @@ document.getElementById("treeDataForm").addEventListener("submit", async functio
     console.log("Daten:", { treeType, treeHeight, inclination, trunkDiameter, latitude, longitude });
 
     // Standort-Adresse abrufen
-    const address = await getAddressFromCoordinates(latitude, longitude);
-    document.getElementById("location").innerText = "Standort: " + address;
+    //const address = await getAddressFromCoordinates(latitude, longitude);
+    //document.getElementById("location").innerText = "Standort: " + address;
 
     // Daten an den Flask-Server senden
     fetch('/submit_tree_data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+            //measurerName:measurerName,
             tree_type: treeType,
             tree_height: treeHeight,
             inclination: inclination,
             trunk_diameter: trunkDiameter,
             latitude: latitude,
             longitude: longitude,
-            address: address // Übergabe der korrekten Adresse
+            //address: address // Übergabe der korrekten Adresse
         })
     })
     .then(response => response.json())

@@ -5,8 +5,15 @@ from datetime import datetime
 from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, HealthStatus, TreePhoto, CommunityContribution, AccountType
 from extensions import db, bcrypt_instance
 from sqlalchemy.orm import joinedload
+import os
+
 
 def init_routes(app):
+    # Funktion zur Überprüfung erlaubter Dateitypen
+    def allowed_file(filename):
+        allowed_extensions = app.config['ALLOWED_EXTENSIONS']
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
     # Login-Manager
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -118,6 +125,8 @@ def init_routes(app):
     @app.route("/submit_tree_data", methods=["POST"])
     @login_required
     def submit_tree_data():
+        #print("Content-Type der Anfrage:", request.content_type)
+        #print("Dateien in Anfrage:", request.files)   # Erwartet Dateien
         # Use request.form for data coming from an HTML form
         tree_type = request.form.get("tree_type")
         tree_height = request.form.get("tree_height")
@@ -131,6 +140,14 @@ def init_routes(app):
         required_fields = [tree_type, tree_height, inclination, trunk_diameter, latitude, longitude, address]
         if not all(required_fields):
             return jsonify({"error": "Fehlende Daten. Bitte alle Felder ausfüllen."}), 400
+        # Test if all pictures are uploaded
+        if "tree_photos" not in request.files:
+            return jsonify({"error": "Keine Bilder hochgeladen"}), 400
+        
+        # Get Files out of Request
+        files = request.files.getlist("tree_photos")
+        if not files or len(files) == 0:
+            return jsonify({"error": "Keine Dateien gefunden."}), 400
 
         try:
             # Create new Tree object
@@ -162,7 +179,32 @@ def init_routes(app):
             db.session.add(newMeasurement)
             db.session.commit()
 
-            return jsonify({"message": "Baumdaten erfolgreich gespeichert"}), 201
+             # Bilder speichern und in TreePhoto einfügen
+            uploaded_files = []
+            for file in files:
+                #print("Datei gefunden:", file.filename)
+                if file and allowed_file(file.filename):
+                    # Sicheren Dateinamen erstellen
+                    filename = file.filename
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+                    # Datei speichern
+                    file.save(filepath)
+                    uploaded_files.append(filename)
+
+                    # In der TreePhoto-Tabelle speichern
+                    newPhoto = TreePhoto(
+                    tree_id=newTree.id,
+                    measurement_id=newMeasurement.id,
+                    user_id=current_user.id,
+                    photo_path=filepath,
+                    description=f"Foto für Baum {tree_type}"
+                    )
+                
+            db.session.add(newPhoto)
+            db.session.commit()
+
+            return redirect("/dashboard")
 
         except Exception as e:
             db.session.rollback()

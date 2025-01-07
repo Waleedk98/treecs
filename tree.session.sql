@@ -1,1 +1,1 @@
-SELECT * FROM users
+SELECT * FROM tree_photos

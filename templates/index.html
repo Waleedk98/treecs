@@ -129,7 +129,7 @@
     <h1>Baumdaten erfassen</h1>
 
     <!-- Form for Tree Data -->
-    <form id="treeDataForm" method="POST" action="/submit_tree_data">
+    <form id="treeDataForm" method="POST" action="/submit_tree_data" enctype="multipart/form-data">
         <label for="measurerName">
             Name des Messers:
             <span class="info-icon" data-tooltip="Name des Messers eingeben (optional).">i</span>
@@ -172,7 +172,7 @@
             Baumfotos hochladen (2 Bilder erforderlich):
             <span class="info-icon" data-tooltip="Laden Sie mindestens 2 Fotos des Baums hoch.">i</span>
         </label>
-        <input type="file" id="treePhotos" name="tree_photos" accept="image/*" multiple required>
+        <input type="file" id="treePhotos" name="tree_photos" multiple required>
 
         <button type="submit">Daten speichern</button>
     </form>

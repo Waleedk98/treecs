@@ -200,10 +200,10 @@ def init_routes(app):
                     photo_path=filepath,
                     description=f"Foto für Baum {tree_type}"
                     )
+                    db.session.add(newPhoto)
+                    db.session.commit()
                 
-            db.session.add(newPhoto)
-            db.session.commit()
-
+            
             return redirect("/dashboard")
 
         except Exception as e:

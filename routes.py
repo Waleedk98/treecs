@@ -150,10 +150,13 @@ def init_routes(app):
             return jsonify({"error": "Keine Dateien gefunden."}), 400
 
         try:
+            # Den Baumtyp aus der Datenbank holen, basierend auf dem Namen
+            tree_type_obj = TreeType.query.filter_by(name=tree_type).first()
+            
             # Create new Tree object
             newTree = Tree(
                 user_id=current_user.id,
-                tree_type=tree_type,
+                tree_type_id=tree_type_obj.id,
                 tree_height=float(tree_height),
                 inclination=float(inclination),
                 trunk_diameter=float(trunk_diameter),

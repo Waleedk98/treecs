@@ -4,6 +4,7 @@ from flask_mail import Mail
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import DevelopmentConfig
+from initData import initialize_tree_types
 from extensions import db, mail, bcrypt_instance
 from models import User
 from routes import init_routes
@@ -36,7 +37,13 @@ def create_app(config_class=DevelopmentConfig):
     with app.app_context():
         db.create_all()  # Sollte in der Produktion durch Migrationen ersetzt werden
 
+    with app.app_context():
+            initialize_tree_types()
+            
+    
     return app
+
+
 
 if __name__ == "__main__":
     app = create_app()

@@ -124,7 +124,7 @@ def init_routes(app):
 
     @app.route("/submit_tree_data", methods=["POST"])
     @login_required
-    def submit_tree_data():
+    def submit_tree_data():#Unterscheidung wenn bereits in Datenbank?
         #print("Content-Type der Anfrage:", request.content_type)
         #print("Dateien in Anfrage:", request.files)   # Erwartet Dateien
         # Use request.form for data coming from an HTML form
@@ -206,7 +206,15 @@ def init_routes(app):
                     db.session.add(newPhoto)
                     db.session.commit()
                 
-            
+            newContribution = CommunityContribution (
+                tree_id =newTree.id,
+                user_id =current_user.id,
+                contribution_type = "Added Tree",   # Contribution Type Int?
+                description = ""                    # Was als Beschreibung?
+            )
+            db.session.add(newContribution)
+            db.session.commit()
+
             return redirect("/dashboard")
 
         except Exception as e:

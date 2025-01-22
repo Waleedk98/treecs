@@ -33,10 +33,10 @@ def init_routes(app):
             if User.query.filter_by(email=email).first():
                 return "E-Mail existiert bereits", 400
 
-            # Create default trust level and account type
-            trust_level = TrustLevel(rank="Basic", description="Standard Trust Level")
-            db.session.add(trust_level)
-            db.session.commit()
+            # Holen des Standard TrustLevels mit ID 1 (Basic)
+            trust_level = TrustLevel.query.get(1)
+            if not trust_level:
+                return "Fehler: Der Standard TrustLevel (ID 1) wurde nicht gefunden.", 500
 
             account_type = AccountType(type_name="User", description="Standard Account Type")
             db.session.add(account_type)

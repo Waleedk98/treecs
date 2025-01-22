@@ -11,7 +11,7 @@ import string
 class TrustLevel(db.Model):
     __tablename__ = 'trust_levels'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     rank = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=False)
 

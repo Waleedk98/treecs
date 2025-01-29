@@ -5,7 +5,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import DevelopmentConfig
 from initData import initialize_tree_types, initialize_trust_levels
-from extensions import db, mail, bcrypt_instance
+from extensions import db, mail, bcrypt_instance 
 from models import User
 from routes import init_routes
 
@@ -42,6 +42,8 @@ def create_app(config_class=DevelopmentConfig):
             
     with app.app_context():
             initialize_trust_levels()
+            
+            
             
     
     return app

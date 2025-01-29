@@ -3,6 +3,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from datetime import datetime
 from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, HealthStatus, TreePhoto, CommunityContribution, AccountType
 from extensions import db, bcrypt_instance
+from functions import get_gps_data_exifread, get_address_from_coordinates
 import os
 
 def init_routes(app):
@@ -107,6 +108,7 @@ def init_routes(app):
         return render_template("index.html")
     
 
+    
     # Submit tree data route
     @app.route("/submit_tree_data", methods=["POST"])
     @login_required
@@ -115,16 +117,14 @@ def init_routes(app):
         tree_height = request.form.get("tree_height")
         inclination = request.form.get("inclination")
         trunk_diameter = request.form.get("trunk_diameter")
-        latitude = request.form.get("latitude")
-        longitude = request.form.get("longitude")
         address = request.form.get("address")
 
-        # Validate required fields
-        required_fields = [tree_type, tree_height, inclination, trunk_diameter, latitude, longitude, address]
+        # Validierung der erforderlichen Felder ohne Geodaten
+        required_fields = [tree_type, tree_height, inclination, trunk_diameter]
         if not all(required_fields):
             return jsonify({"error": "Fehlende Daten. Bitte alle Felder ausfüllen."}), 400
 
-        # Test if all pictures are uploaded
+        # Überprüfung, ob Bilder hochgeladen wurden
         if "tree_photos" not in request.files:
             return jsonify({"error": "Keine Bilder hochgeladen"}), 400
 
@@ -132,6 +132,19 @@ def init_routes(app):
         if not files or len(files) == 0:
             return jsonify({"error": "Keine Dateien gefunden."}), 400
 
+        # GPS-Daten aus dem ersten Bild extrahieren
+        first_file = files[0]
+        gps_coords = get_gps_data_exifread(first_file)  # Funktion zum Abrufen von GPS-Daten
+        if not gps_coords:
+            return jsonify({"error": "Das erste Bild enthält keine GPS-Daten. Stellen Sie sicher, dass das Bild Geotags enthält."}), 400
+
+        # Extrahierte GPS-Daten verwenden
+        extracted_latitude, extracted_longitude = gps_coords
+        
+        # Debug-Ausgabe der GPS-Daten
+        #print(f"Extrahierte GPS-Daten: Latitude={extracted_latitude}, Longitude={extracted_longitude}")
+
+        address = get_address_from_coordinates(extracted_latitude, extracted_longitude)
         try:
             tree_type_obj = TreeType.query.filter_by(name=tree_type).first()
 
@@ -141,8 +154,8 @@ def init_routes(app):
                 tree_height=float(tree_height),
                 inclination=float(inclination),
                 trunk_diameter=float(trunk_diameter),
-                latitude=float(latitude),
-                longitude=float(longitude),
+                latitude=float(extracted_latitude),
+                longitude=float(extracted_longitude),
                 address=address or "Unbekannter Standort"
             )
             db.session.add(newTree)
@@ -189,6 +202,7 @@ def init_routes(app):
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": f"Es ist ein Fehler aufgetreten: {str(e)}"}), 500
+
 
     # Dashboard route
     @app.route('/dashboard')

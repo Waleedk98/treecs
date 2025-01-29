@@ -5,6 +5,7 @@ from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, Heal
 from extensions import db, bcrypt_instance
 from functions import get_gps_data_exifread, get_address_from_coordinates
 from sqlalchemy.orm import joinedload
+from werkzeug.utils import secure_filename
 import os
 
 def init_routes(app):
@@ -173,10 +174,21 @@ def init_routes(app):
             db.session.add(newMeasurement)
             db.session.commit()
 
+            # Speicherpfad für Bilder im 'static/uploads/tree_photos/'
+            upload_folder = app.config['UPLOAD_FOLDER']  # z.B. 'static/uploads/tree_photos/'
+
+            # Stelle sicher, dass der Ordner existiert
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+
+            # Verarbeite die Bilder
             for file in files:
                 if file and allowed_file(file.filename):
-                    filename = file.filename
-                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                 # Sicherstellen, dass der Dateiname sicher ist
+                    filename = secure_filename(file.filename)
+
+                    # Speichern der Datei im richtigen Ordner
+                    filepath = os.path.join(upload_folder, filename)
                     file.save(filepath)
 
                     newPhoto = TreePhoto(

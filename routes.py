@@ -4,6 +4,7 @@ from datetime import datetime
 from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, HealthStatus, TreePhoto, CommunityContribution, AccountType
 from extensions import db, bcrypt_instance
 from functions import get_gps_data_exifread, get_address_from_coordinates
+from sqlalchemy.orm import joinedload
 import os
 
 def init_routes(app):
@@ -205,8 +206,15 @@ def init_routes(app):
 
 
     # Dashboard route
+    
     @app.route('/dashboard')
     @login_required
     def dashboard():
-        trees = Tree.query.filter_by(user_id=current_user.id).all()
+    # Fetch trees with their associated photos for the current user
+        trees = (
+        Tree.query
+        .filter_by(user_id=current_user.id)  # Only fetch trees for the logged-in user
+        .options(joinedload(Tree.photos))  # Eagerly load photos associated with each tree
+        .all()
+    )
         return render_template('dashboard.html', trees=trees, current_user=current_user)

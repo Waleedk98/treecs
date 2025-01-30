@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#!/Users/waleedkhaliq/Desktop/flask_project/venv/bin/python3.12
-=======
-#!/Users/apple/Downloads/treecs/venv/bin/python3.12
->>>>>>> origin/main
+#!/home/www/treecs/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -1,4 +1,4 @@
-#!/Users/apple/Downloads/treecs/venv/bin/python3.12
+#!/home/www/treecs/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

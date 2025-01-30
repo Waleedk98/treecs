@@ -1,1 +1,2 @@
-SELECT * FROM community_contributions
+TRUNCATE TABLE trust_levels CASCADE;
+--SELECT * FROM users

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hauptmenü - Tree App</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset and Body */
+        body {
+            font-family: 'DM Serif Text', serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Hide overflow for the background */
+            color: #333;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place canvas behind everything */
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #4CAF50;
+            padding: 10px 20px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 10px 20px;
+            background-color: #FF6F61;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: #E65A50;
+        }
+
+        /* Menu Container */
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 85vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Logo */
+        .menu-container .logo img {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Title */
+        h1 {
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #4CAF50;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Buttons */
+        .menu-button {
+            display: block;
+            width: 90%;
+            max-width: 300px;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            background-color: #45A049;
+        }
+
+        .menu-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background"></canvas>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <h2>Hallo, {{ current_user.uname }}</h2>
+        <a href="/logout">Abmelden</a>
+    </div>
+
+    <!-- Main Menu -->
+    <div class="menu-container">
+        <!-- Logo -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/treecs_logo.png') }}" alt="Tree App Logo">
+        </div>
+
+        <!-- Welcome Title -->
+        <h1>Willkommen<br>zur Tree App</h1>
+
+        <!-- Navigation Buttons -->
+        <button class="menu-button" onclick="location.href='/index'">Baumdaten erfassen</button>
+        <button class="menu-button" onclick="location.href='/dashboard'">Baum Data Dashboard</button>
+        <button class="menu-button" onclick="location.href='/profile'">Mein Profil</button>
+        <button class="menu-button" onclick="location.href='/about-us'">Über uns</button>
+        <button class="menu-button" onclick="location.href='/help'">Hilfe</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('background');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let gradientShift = 0;
+
+        function drawGradient() {
+            gradientShift += 0.01; // Gradual shift for pulsating animation
+            const color1 = `rgb(
+                ${Math.floor(160 + 95 * Math.sin(gradientShift))},
+                ${Math.floor(255 - 60 * Math.sin(gradientShift))},
+                ${Math.floor(160 + 80 * Math.cos(gradientShift))}
+            )`;
+            const color2 = `rgb(
+                ${Math.floor(140 + 85 * Math.cos(gradientShift))},
+                ${Math.floor(230 + 25 * Math.sin(gradientShift))},
+                ${Math.floor(140 + 70 * Math.sin(gradientShift))}
+            )`;
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, color1);
+            gradient.addColorStop(1, color2);
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function animate() {
+            drawGradient();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
+</body>
+</html>

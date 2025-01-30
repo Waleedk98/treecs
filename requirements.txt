@@ -3,6 +3,7 @@ bcrypt==4.2.1
 blinker==1.9.0
 click==8.1.7
 colorama==0.4.6
+ExifRead==3.0.0
 Flask==3.1.0
 Flask-Assets==2.1.0
 Flask-Bcrypt==1.0.1

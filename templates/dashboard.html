@@ -246,7 +246,7 @@
           {% if tree.photos %}
             <div class="photo-gallery">
               {% for photo in tree.photos %}
-                <img src="{{ url_for('static', filename=photo.photo_path) }}" alt="Tree Photo" class="tree-photo" />
+              <img src="{{ photo.photo_path }}" alt="Tree Photo" class="tree-photo" />
               {% endfor %}
             </div>
           {% else %}

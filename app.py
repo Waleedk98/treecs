@@ -4,7 +4,7 @@ from flask_mail import Mail
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import DevelopmentConfig
-from initData import initialize_tree_types, initialize_trust_levels
+from initData import initialize_tree_types, initialize_trust_levels, initialize_acc_type
 from extensions import db, mail, bcrypt_instance 
 from models import User
 from routes import init_routes
@@ -38,12 +38,13 @@ def create_app(config_class=DevelopmentConfig):
         db.create_all()  # Sollte in der Produktion durch Migrationen ersetzt werden
 
     with app.app_context():
-            initialize_tree_types()
+        initialize_tree_types()
             
     with app.app_context():
-            initialize_trust_levels()
+        initialize_trust_levels()
             
-            
+    with app.app_context():
+        initialize_acc_type()
             
     
     return app

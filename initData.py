@@ -1,4 +1,4 @@
-from models import TreeType, TrustLevel, db  # Importiere TreeType und db aus deinen Modellen
+from models import TreeType, TrustLevel, AccountType, db  # Importiere TreeType und db aus deinen Modellen
 
 def initialize_tree_types():
     """
@@ -76,3 +76,23 @@ def initialize_trust_levels():
         db.session.add(TrustLevel(**trust_level))  # Erstelle und füge TrustLevel hinzu
     db.session.commit()  # Bestätige die Transaktion
     print("Trust levels initialized successfully.")
+
+def initialize_acc_type():
+    # Überprüfen, ob die Tabelle bereits Daten enthält
+    if AccountType.query.first():  # Wenn es bereits TrustLevels gibt, überspringen
+        print("Accounttypes already initialized.")
+        return
+    
+    account_types = [
+        {"id":"1", "type_name":"User", "description": "Standard Account Type"},
+        {"id":"2", "type_name":"Expert", "description": "Expert Account Type"},
+        {"id":"3", "type_name":"Admin", "description": "Admin Account Type"},
+    ]
+    
+     # Daten in die Datenbank einfügen
+    print("Inserting accounttypes...")
+    
+    for account_types in account_types:
+        db.session.add(AccountType(**account_types))  # Erstelle und füge Accounttypes hinzu
+    db.session.commit()  # Bestätige die Transaktion
+    print("Accounttypes initialized successfully.")

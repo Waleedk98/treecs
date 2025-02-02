@@ -22,10 +22,6 @@ def handle_register():
             if not trust_level:
                 return "Fehler: Der Standard TrustLevel (ID 1) wurde nicht gefunden.", 500
 
-            account_type = AccountType(type_name="User", description="Standard Account Type")
-            db.session.add(account_type)
-            db.session.commit()
-
             # Generate salt and hash password
             salt = User.generate_salt()
             salted_password = password + salt
@@ -42,7 +38,7 @@ def handle_register():
             db.session.add(new_user)
             db.session.commit()
 
-            user_role = UserRole(user_id=new_user.id, account_type_id=account_type.id)
+            user_role = UserRole(user_id=new_user.id, account_type_id="1")
             db.session.add(user_role)
             db.session.commit()
 

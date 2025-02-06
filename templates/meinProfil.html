@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Mein Profil{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/meinProfil.css') }}" />
+{% endblock %}
+
+{% block content %}
+    
+        <h1>Mein Profil</h1>
+   
+
+    <!-- Profile Section -->
+    <div class="profile-container">
+        <h2>{{ current_user.uname }}</h2>
+
+        <!-- Profile Information -->
+        <div class="profile-info">
+            <p><strong>Email:</strong> {{ current_user.email }}</p>
+            <p><strong>Verifiziert:</strong> {{ "Ja" if current_user.verified else "Nein" }}</p>
+            <p><strong>Trust Level:</strong> {{ current_user.trust_level.rank }}</p>
+            <p><strong>XP Punkte:</strong> {{ current_user.xp }}</p>
+            <p><strong>Registriert seit:</strong> {{ current_user.created_at.strftime('%d.%m.%Y') }}</p>
+        </div>
+
+        <!-- Buttons -->
+        <button class="button" onclick="openEditModal()">Profil bearbeiten</button>
+        <button class="button" onclick="openPasswordModal()">Passwort ändern</button>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editModal" class="modal">
+        <h2>Profil bearbeiten</h2>
+        <form method="POST" action="/update_profile">
+            <div class="input-group">
+                <label for="uname">Neuer Benutzername:</label>
+                <input type="text" id="uname" name="uname" value="{{ current_user.uname }}" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Neue E-Mail:</label>
+                <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+            </div>
+
+            <button class="button" type="submit">Speichern</button>
+            <button class="button modal-close" type="button" onclick="closeEditModal()">Abbrechen</button>
+        </form>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="passwordModal" class="modal">
+        <h2>Passwort ändern</h2>
+        <form method="POST" action="/update_password">
+            <div class="input-group">
+                <label for="current_password">Aktuelles Passwort:</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+
+            <div class="input-group">
+                <label for="new_password">Neues Passwort:</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+
+            <button class="button" type="submit">Passwort ändern</button>
+            <button class="button modal-close" type="button" onclick="closePasswordModal()">Abbrechen</button>
+        </form>
+    </div>
+    {% endblock %}
+    {% block extra_js %}
+    <script>
+        function openEditModal() { document.getElementById('editModal').style.display = 'block'; }
+        function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
+        function openPasswordModal() { document.getElementById('passwordModal').style.display = 'block'; }
+        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
+    </script>
+  {% endblock %}

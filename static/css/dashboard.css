@@ -1,0 +1,207 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to bottom, #e6ffe6, #ccffcc);
+    min-height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.content-container {
+    margin-top: 10px; /* This creates the actual spacing */
+}
+
+/* Center Headings */
+h1, h2 {
+    margin: 10px 0;
+    color: #4caf50;
+    font-size: 2rem;
+    text-align: center;
+    width: 100%;
+}
+
+/* Center Buttons */
+a.btn {
+    display: block;
+    margin: 10px auto;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+    background-color: #f44336;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: fit-content;
+}
+
+a.btn:hover {
+    background-color: #d32f2f;
+}
+
+/* 📌 Make Filter Panel Stacked for All Screens */
+.filter-container {
+    display: flex;
+    flex-direction: column; /* Always stacked */
+    justify-content: center; /* Center elements */
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 700px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 📌 Ensure Inputs Stay Inside Padding */
+.filter-container select,
+.filter-container input,
+.filter-container button {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-align: center;
+    width: 90%; /* Makes them uniform */
+    max-width: 300px; /* Prevents stretching */
+}
+
+/* 📌 Ensure Consistency on All Screens */
+@media (max-width: 768px) {
+    .filter-container {
+        width: 90%;
+        padding: 12px; /* Keep the padding balanced */
+    }
+
+    .filter-container select,
+    .filter-container input,
+    .filter-container button {
+        max-width: 280px; /* Prevent elements from stretching too much */
+    }
+}
+/* 📌 CENTER CARDS */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center; /* Ensure cards are centered */
+}
+
+/* Individual Cards */
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.3s ease;
+    margin: 0 auto; /* Ensure cards are centered */
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+/* Make sure cards take full width on smaller screens */
+@media (max-width: 768px) {
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        width: 90%;
+        max-width: 400px;
+    }
+}
+
+/* Card Title */
+.card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #4caf50;
+    text-align: center;
+}
+
+/* Card Text */
+.card p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Location & Timestamp */
+.card .location {
+    font-style: italic;
+    color: #777;
+}
+
+.card .timestamp {
+    font-size: 0.85rem;
+    color: #999;
+}
+
+/* 📌 Center Buttons Inside Cards */
+.card-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center buttons */
+    gap: 8px;
+}
+
+/* Buttons inside cards */
+.card-actions button {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.card-actions button:hover {
+    background-color: #45a049;
+}
+
+/* 📌 PHOTO GALLERY: Center images properly */
+.photo-gallery {
+    display: flex;
+    justify-content: center; /* Center images */
+    gap: 10px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding: 5px;
+}
+
+.tree-photo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tree-photo:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}

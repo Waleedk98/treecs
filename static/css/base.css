@@ -1,0 +1,131 @@
+/* Add this at the very top */
+@import url('https://fonts.googleapis.com/css2?family=Andika:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+* {
+    margin: 10;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Andika', sans-serif !important; /* Changed font */
+}
+
+/* Add these new rules */
+input, button, select, textarea, optgroup, option {
+    font-family: 'Andika', sans-serif !important;
+}
+
+input::placeholder, textarea::placeholder {
+    font-family: 'Andika', sans-serif !important;
+}
+
+.global-header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #4CAF50;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.global-header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+}
+
+.dropdown {
+    position: relative;
+    margin-left: auto;
+    right: auto;
+}
+
+.dropbtn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.2s ease;
+    font-size: 1.1rem;
+    min-height: 40px;
+}
+
+.dropbtn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-arrow {
+    font-size: 0.6em;
+    margin-left: 0.5em;
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    min-width: 200px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.dropdown-content.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    display: block;
+    transition: background 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background: #f5f5f5;
+}
+
+.content-container {
+    margin-top: 80px;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .global-header {
+        padding: 0 1rem;
+    }
+    
+    .global-header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .dropbtn {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+        min-height: 36px;
+    }
+    
+    .dropdown-content {
+        min-width: 160px;
+    }
+}

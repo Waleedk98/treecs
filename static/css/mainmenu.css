@@ -1,0 +1,103 @@
+/* General Reset and Body */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Hide overflow for the background */
+    color: #fbfbfb;
+}
+
+/* Background Canvas */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Place canvas behind everything */
+}
+
+/* Navbar Styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4CAF50;
+    padding: 10px 20px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px 20px;
+    background-color: #FF6F61;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar a:hover {
+    background-color: #E65A50;
+}
+
+/* Menu Container */
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Changed from center */
+    min-height: 80vh; /* Changed from fixed height */
+    padding: 10px 20px 10px; /* Reduced top padding */
+}
+
+/* Logo */
+.menu-container .logo img {
+    max-width: 160px; /* Slightly smaller */
+    height: auto;
+    margin-bottom: 10px; /* Reduced from 20px */
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+    transition: transform 0.3s ease; /* Added for hover effect */
+}
+
+/* Title */
+h1 {
+    margin: 10px 0 15px; /* Reduced top/bottom margins */
+    font-size: 2.2rem; /* Slightly smaller */
+    line-height: 1.2; /* Tighter line spacing */
+    text-align: center;
+}
+
+/* Buttons */
+.menu-button {
+    display: block;
+    width: 90%;
+    max-width: 300px;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    background-color: #45A049;
+}
+
+.menu-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+

@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Analyse{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}" />
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+  <h1>CO₂-Analyse deines Baumes</h1>
+  <div class="container">
+      <h2>Baumdetails</h2>
+      <p><strong>Baumart:</strong> {{ tree.tree_type.name }}</p>
+      <p><strong>Höhe:</strong> {{ tree.tree_height }} m</p>
+      <p><strong>Durchmesser:</strong> {{ tree.trunk_diameter }} cm</p>
+
+      <h2>🌳 Dein Baum wächst mit CO₂!</h2>
+      <div class="tree-container" id="treeImage">🌱</div>
+
+      <h2>🌍 Wie viel CO₂ speichert dein Baum?</h2>
+      <div class="info-box">
+          <p><strong>Dieser Baum speichert:</strong> {{ co2_absorbed }} kg CO₂ pro Jahr.</p>
+      </div>
+
+      <!-- Interactive CO₂ Reduction Visualization -->
+      <h3>Interaktive CO₂-Reduktions-Simulation</h3>
+      <p>
+        Bewege den Schieberegler, um zu sehen, wie viel CO₂ dein Baum im Laufe der Zeit absorbiert – und
+        wie viele Kilometer Autofahrt (bei ca. 0,16 kg CO₂ pro km) dadurch ausgeglichen würden.
+      </p>
+      <label for="yearSlider">Jahre: <span id="yearValue">0</span></label>
+      <input type="range" id="yearSlider" min="0" max="20" value="0" />
+      <div id="growthVisualization" class="visualization">
+          <div id="treeVisual" class="treeVisual">🌱</div>
+          <div id="co2Display" class="co2Display">0 kg CO₂ gespeichert</div>
+      </div>
+      <div id="carComparison" class="comparison">
+          <p>Das entspricht ungefähr <span id="kmOffset">0</span> km Autofahrt.</p>
+      </div>
+
+      <!-- Social Media Share Section Using Bootstrap Icons -->
+      <div class="share-container">
+          <h3>Teile dein Ergebnis auf Social Media!</h3>
+          <div class="share-icons">
+              <a id="shareFacebook" href="#" target="_blank" title="Auf Facebook teilen">
+                <i class="bi bi-facebook"></i>
+              </a>
+              <!-- Replaced Twitter with Instagram -->
+              <a id="shareInstagram" href="https://www.instagram.com/yourusername" target="_blank" title="Auf Instagram teilen">
+                <i class="bi bi-instagram"></i>
+              </a>
+              <a id="shareLinkedIn" href="#" target="_blank" title="Auf LinkedIn teilen">
+                <i class="bi bi-linkedin"></i>
+              </a>
+              <a id="shareWhatsApp" href="#" target="_blank" title="Auf WhatsApp teilen">
+                <i class="bi bi-whatsapp"></i>
+              </a>
+          </div>
+      </div>
+
+      <div id="funFact">🌱 Lade ein...</div>
+
+      <div class="buttons">
+          <button onclick="location.href='/dashboard'">Zum Dashboard</button>
+          <button onclick="location.href='/'">Zum Hauptmenü</button>
+      </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const annualCo2 = parseFloat("{{ co2_absorbed }}");
+
+      // Tree Growth Animation (Static Overview)
+      const treeContainer = document.getElementById("treeImage");
+      if (annualCo2 > 30) {
+          treeContainer.innerHTML = "🌳";
+          treeContainer.style.transform = "scale(1.5)";
+      } else if (annualCo2 > 15) {
+          treeContainer.innerHTML = "🌲";
+          treeContainer.style.transform = "scale(1.2)";
+      } else {
+          treeContainer.innerHTML = "🌱";
+          treeContainer.style.transform = "scale(1.0)";
+      }
+
+      // Fun Facts - Appear Every 5 Seconds
+      const funFacts = [
+          "🌱 Bäume kommunizieren untereinander durch Wurzelsysteme!",
+          "🌳 Der Amazonas-Regenwald speichert 20% des weltweiten Sauerstoffs!",
+          "🌲 Ein Baum kann im Sommer eine ganze Straße kühlen!",
+          "🌾 Bäume können bis zu 100 Liter Wasser pro Tag verdunsten!"
+      ];
+      let currentFactIndex = 0;
+      function showNextFunFact() {
+          document.getElementById("funFact").textContent = funFacts[currentFactIndex];
+          currentFactIndex = (currentFactIndex + 1) % funFacts.length;
+      }
+      showNextFunFact();
+      setInterval(showNextFunFact, 5000);
+
+      // Interactive CO₂-Reduktions-Simulation
+      const yearSlider = document.getElementById("yearSlider");
+      const yearValue = document.getElementById("yearValue");
+      const treeVisual = document.getElementById("treeVisual");
+      const co2Display = document.getElementById("co2Display");
+      const kmOffsetElement = document.getElementById("kmOffset");
+
+      function updateGrowthSimulation() {
+          const years = parseInt(yearSlider.value);
+          yearValue.textContent = years;
+
+          // Update tree icon and scaling based on selected years
+          if (years < 5) {
+              treeVisual.textContent = "🌱";
+              treeVisual.style.transform = "scale(1.0)";
+          } else if (years < 10) {
+              treeVisual.textContent = "🌲";
+              treeVisual.style.transform = "scale(1.2)";
+          } else {
+              treeVisual.textContent = "🌳";
+              treeVisual.style.transform = "scale(1.5)";
+          }
+
+          // Calculate cumulative CO₂ absorption over the years
+          const cumulativeCO2 = (annualCo2 * years).toFixed(1);
+          co2Display.textContent = cumulativeCO2 + " kg CO₂ gespeichert";
+
+          // Compare with car emissions (approx. 0,16 kg CO₂ per km)
+          const averageCarEmissionPerKm = 0.16;
+          const kmOffset = (cumulativeCO2 / averageCarEmissionPerKm).toFixed(0);
+          kmOffsetElement.textContent = kmOffset;
+      }
+
+      yearSlider.addEventListener("input", updateGrowthSimulation);
+      updateGrowthSimulation(); // Initialize simulation on page load
+
+      // Social Media Share Links Setup
+      function updateShareLinks() {
+          // Use the current page URL for sharing.
+          const shareUrl = encodeURIComponent(window.location.href);
+          const text = encodeURIComponent("Schau dir an, wie mein Baum CO₂ reduziert und wie viele Kilometer Autofahrt das ausgleicht!");
+          document.getElementById("shareFacebook").href = "https://www.facebook.com/sharer/sharer.php?u=" + shareUrl;
+          // For Instagram, we are linking to the profile since Instagram doesn't support web sharing
+          document.getElementById("shareLinkedIn").href = "https://www.linkedin.com/sharing/share-offsite/?url=" + shareUrl;
+          document.getElementById("shareWhatsApp").href = "https://api.whatsapp.com/send?text=" + text + "%20" + shareUrl;
+      }
+      updateShareLinks();
+  });
+</script>
+{% endblock %}

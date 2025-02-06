@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Über uns{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/aboutus.css') }}" />
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Über uns</h1>
+        <h2>Unsere Mission</h2>
+        <p>Bei Tree App setzen wir uns für die Förderung der ökologischen Nachhaltigkeit ein, indem wir Einzelpersonen und Gemeinschaften dabei unterstützen, die ökologischen Vorteile von Bäumen zu verstehen und zu verbessern. Unsere Mission ist es, eine benutzerfreundliche Plattform bereitzustellen, die Baumdaten analysiert, um ihren Beitrag zur CO₂-Reduktion und zur allgemeinen Umweltgesundheit zu quantifizieren.</p>
+        <h2>Was wir tun</h2>
+        <p>Unsere Anwendung ermöglicht es den Nutzern, spezifische Daten über Bäume einzugeben, wie z. B. Art, Größe und Standort. Mithilfe fortschrittlicher Algorithmen und etablierter wissenschaftlicher Modelle analysieren wir diese Informationen, um die Menge des von jedem Baum sequestrierten CO₂ zu schätzen. Diese Analyse hilft den Nutzern, den ökologischen Wert ihrer Bäume zu schätzen und fundierte Entscheidungen über Pflanz- und Erhaltungsmaßnahmen zu treffen.</p>
+        <h2>Warum es wichtig ist</h2>
+        <p>Bäume spielen eine entscheidende Rolle bei der Bekämpfung des Klimawandels, indem sie CO₂ absorbieren, die Luftqualität verbessern und zahlreiche weitere Umweltvorteile bieten. Durch das Verständnis der Auswirkungen einzelner Bäume können die Nutzer zu größeren Umweltzielen beitragen, städtische Planungsinitiativen unterstützen und eine tiefere Verbindung zur Natur fördern.</p>
+        <h2>Schließen Sie sich uns an</h2>
+        <p>Wir laden Sie ein, unsere Anwendung zu erkunden, Ihre Baumdaten beizutragen und sich unserer Mission anzuschließen, einen grüneren und gesünderen Planeten zu schaffen. Gemeinsam können wir einen bedeutenden Unterschied machen, einen Baum nach dem anderen.</p>
+    </div>
+    {% endblock %}
+    {% block extra_js %}
+  {% endblock %}

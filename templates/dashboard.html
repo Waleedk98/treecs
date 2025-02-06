@@ -1,301 +1,138 @@
-<!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text&display=swap" rel="stylesheet" />
-    <style>
-      body {
-        font-family: 'DM Serif Text', serif;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background: linear-gradient(to bottom, #e6ffe6, #ccffcc);
-        min-height: 100vh;
-        overflow-y: auto;
-        box-sizing: border-box;
-      }
-      
-      h1 {
-        margin: 20px 0;
-        color: #4caf50;
-        font-size: 2rem;
-        text-align: center;
-      }
-      
-      h2 {
-        margin-top: 20px;
-        margin-bottom: 10px;
-        font-size: 1.5rem;
-        color: #4caf50;
-        text-align: center;
-      }
-      
-      a.btn {
-        margin-bottom: 20px;
-        text-align: center;
-        text-decoration: none;
-        color: #fff;
-        background-color: #f44336;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      
-      a.btn:hover {
-        background-color: #d32f2f;
-      }
-      
-      .filter-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
-      
-      .filter-container select,
-      .filter-container input,
-      .filter-container button {
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      
-      .filter-container button {
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      
-      .filter-container button:hover {
-        background-color: #45a049;
-      }
-      
-      .card-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        width: 100%;
-        max-width: 1200px;
-      }
-      
-      .card {
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        text-align: left;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      
-      .card h3 {
-        margin: 0;
-        font-size: 1.2rem;
-        color: #4caf50;
-      }
-      
-      .card p {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #333;
-      }
-      
-      .card .location {
-        font-style: italic;
-        color: #777;
-      }
-      
-      .card .timestamp {
-        font-size: 0.8rem;
-        color: #999;
-      }
-      
-      .card-actions {
-        margin-top: 10px;
-        display: flex;
-        justify-content: flex-end;
-      }
-      
-      .card-actions button {
-        background-color: #4caf50;
-        color: white;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 5px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-      }
-      
-      .card-actions button:hover {
-        background-color: #45a049;
-      }
-      
-      .photo-gallery {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        overflow-x: auto; /* Allow horizontal scrolling for photos */
-        padding: 5px;
-      }
-      
-      .tree-photo {
-        width: 100px; /* Set the fixed width for all images */
-        height: 100px; /* Set the fixed height for all images */
-        object-fit: cover; /* Ensure the image is cropped proportionally */
-        border-radius: 5px; /* Add a slight rounding for aesthetics */
-        border: 1px solid #ccc; /* Optional border for visibility */
-        transition: transform 0.3s, box-shadow 0.3s; /* Add hover effects */
-      }
-      
-      .tree-photo:hover {
-        transform: scale(1.1); /* Slight zoom on hover */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Add a shadow on hover */
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Willkommen, {{ current_user.uname }}</h1>
-    <a class="btn" href="/logout">Abmelden</a>
-    <a href="/" class="btn main-menu-btn">Zurück zum Hauptmenü</a>
+{% extends 'base.html' %}
 
-    <h2>Gespeicherte Baumdaten</h2>
+{% block title %}Dashboard{% endblock %}
 
-    <!-- Filters -->
-    <div class="filter-container">
-      <select id="treeTypeFilter">
-        <option value="">Baumart wählen</option>
-        <option value="Eiche">Eiche</option>
-        <option value="Kiefer">Kiefer</option>
-        <option value="Buche">Buche</option>
-        <option value="Ahorn">Ahorn</option>
-        <option value="Birke">Birke</option>
-        <option value="Fichte">Fichte</option>
-        <option value="Linde">Linde</option>
-        <option value="Esche">Esche</option>
-        <option value="Tanne">Tanne</option>
-        <option value="Douglasie">Douglasie</option>
-        <option value="Pappel">Pappel</option>
-        <option value="Ulme">Ulme</option>
-        <option value="Zeder">Zeder</option>
-        <option value="Walnussbaum">Walnussbaum</option>
-        <option value="Kastanie">Kastanie</option>
-        <option value="Mango">Mango</option>
-        <option value="Teak">Teak</option>
-        <option value="Mahagoni">Mahagoni</option>
-        <option value="Palme">Palme</option>
-        <option value="Olivenbaum">Olivenbaum</option>
-        <option value="Zypresse">Zypresse</option>
-        <option value="Eukalyptus">Eukalyptus</option>
-        <option value="Akazie">Akazie</option>
-        <option value="Roter Ahorn">Roter Ahorn</option>
-        <option value="Balsambaum">Balsambaum</option>
-        <option value="Kirschbaum">Kirschbaum</option>
-        <option value="Apfelbaum">Apfelbaum</option>
-        <option value="Pfefferbaum">Pfefferbaum</option>
-        <option value="Zitronenbaum">Zitronenbaum</option>
-        <option value="Kokospalme">Kokospalme</option>
-        <option value="Bambus">Bambus</option>
-        <!-- Add other tree types dynamically -->
-      </select>
-      <input type="number" id="minHeightFilter" placeholder="Min. Höhe (m)" />
-      <input type="number" id="maxHeightFilter" placeholder="Max. Höhe (m)" />
-      <button onclick="applyFilters()">Filtern</button>
-      <button onclick="resetFilters()">Zurücksetzen</button>
-    </div>
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+{% endblock %}
 
-    <!-- Cards -->
-    <div class="card-container" id="cardContainer">
-      {% for tree in trees %}
-        <div class="card">
-          <!-- Card Title -->
-          <h3>{{ tree.tree_type.name }}</h3>
+{% block content %}
+  <h2>Gespeicherte Baumdaten</h2>
 
-          <!-- Tree Details -->
-          <p>
-            <strong>Höhe:</strong> {{ tree.tree_height }} m
-          </p>
-          <p>
-            <strong>Neigung:</strong> {{ tree.inclination }}°
-          </p>
-          <p>
-            <strong>Durchmesser:</strong> {{ tree.trunk_diameter }} cm
-          </p>
-          <p class="location">
-            <strong>Standort:</strong> {{ tree.address }}
-          </p>
-          <p>
-            <strong>Koordinaten:</strong> {{ tree.latitude }}, {{ tree.longitude }}
-          </p>
-          <p class="timestamp">
-            <strong>Erfasst am:</strong> {{ tree.timestamp.strftime('%d.%m.%Y %H:%M') }}
-          </p>
+  <!-- Filters -->
+  <div class="filter-container">
+    <select id="treeTypeFilter">
+      <option value="">Baumart wählen</option>
+      <option value="Eiche">Eiche</option>
+      <option value="Kiefer">Kiefer</option>
+      <option value="Buche">Buche</option>
+      <option value="Ahorn">Ahorn</option>
+      <option value="Birke">Birke</option>
+      <option value="Fichte">Fichte</option>
+      <option value="Linde">Linde</option>
+      <option value="Esche">Esche</option>
+      <option value="Tanne">Tanne</option>
+      <option value="Douglasie">Douglasie</option>
+      <option value="Pappel">Pappel</option>
+      <option value="Ulme">Ulme</option>
+      <option value="Zeder">Zeder</option>
+      <option value="Walnussbaum">Walnussbaum</option>
+      <option value="Kastanie">Kastanie</option>
+      <option value="Mango">Mango</option>
+      <option value="Teak">Teak</option>
+      <option value="Mahagoni">Mahagoni</option>
+      <option value="Palme">Palme</option>
+      <option value="Olivenbaum">Olivenbaum</option>
+      <option value="Zypresse">Zypresse</option>
+      <option value="Eukalyptus">Eukalyptus</option>
+      <option value="Akazie">Akazie</option>
+      <option value="Roter Ahorn">Roter Ahorn</option>
+      <option value="Balsambaum">Balsambaum</option>
+      <option value="Kirschbaum">Kirschbaum</option>
+      <option value="Apfelbaum">Apfelbaum</option>
+      <option value="Pfefferbaum">Pfefferbaum</option>
+      <option value="Zitronenbaum">Zitronenbaum</option>
+      <option value="Kokospalme">Kokospalme</option>
+      <option value="Bambus">Bambus</option>
+      <!-- Add other tree types dynamically -->
+    </select>
+    <input type="number" id="minHeightFilter" placeholder="Min. Höhe (m)" />
+    <input type="number" id="maxHeightFilter" placeholder="Max. Höhe (m)" />
+    <button onclick="applyFilters()">Filtern</button>
+    <button onclick="resetFilters()">Zurücksetzen</button>
+  </div>
 
-          <!-- Tree Photos -->
-          {% if tree.photos %}
-            <div class="photo-gallery">
-              {% for photo in tree.photos %}
+  <!-- Cards -->
+  <div class="card-container" id="cardContainer">
+    {% for tree in trees %}
+      <div class="card">
+        <!-- Card Title -->
+        <h3>{{ tree.tree_type.name }}</h3>
+
+        <!-- Tree Details -->
+        <p>
+          <strong>Höhe:</strong> {{ tree.tree_height }} m
+        </p>
+        <p>
+          <strong>Neigung:</strong> {{ tree.inclination }}°
+        </p>
+        <p>
+          <strong>Durchmesser:</strong> {{ tree.trunk_diameter }} cm
+        </p>
+        <p class="location">
+          <strong>Standort:</strong> {{ tree.address }}
+        </p>
+        <p>
+          <strong>Koordinaten:</strong> {{ tree.latitude }}, {{ tree.longitude }}
+        </p>
+        <p class="timestamp">
+          <strong>Erfasst am:</strong> {{ tree.timestamp.strftime('%d.%m.%Y %H:%M') }}
+        </p>
+
+        <!-- Tree Photos -->
+        {% if tree.photos %}
+          <div class="photo-gallery">
+            {% for photo in tree.photos %}
               <img src="{{ photo.photo_path }}" alt="Tree Photo" class="tree-photo" />
-              {% endfor %}
-            </div>
-          {% else %}
-            <p class="no-photos">Keine Fotos verfügbar</p>
-          {% endif %}
-
-          <!-- Card Actions -->
-          <div class="card-actions">
-            <button onclick="viewDetails({{ tree.id }})">Details</button>
+            {% endfor %}
           </div>
+        {% else %}
+          <p class="no-photos">Keine Fotos verfügbar</p>
+        {% endif %}
+
+        <!-- Card Actions -->
+        <div class="card-actions">
+          <button onclick="viewDetails({{ tree.id }})">Details</button>
+          <button onclick="location.href='/analysis/{{ tree.id }}'">Analyse anzeigen</button>
         </div>
-      {% endfor %}
-    </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
 
-    <a href="/">Zum Messen</a>
-
-    <script>
-      function applyFilters() {
-        const treeType = document.getElementById('treeTypeFilter').value
-        const minHeight = document.getElementById('minHeightFilter').value
-        const maxHeight = document.getElementById('maxHeightFilter').value
-      
-        const cards = document.querySelectorAll('.card')
-        cards.forEach((card) => {
-          const treeTypeText = card.querySelector('h3').textContent.trim()
-          const height = parseFloat(card.querySelector('p:nth-of-type(2)').textContent.replace('Höhe:', '').replace('m', '').trim())
-      
-          if ((treeType && treeType !== treeTypeText) || (minHeight && height < parseFloat(minHeight)) || (maxHeight && height > parseFloat(maxHeight))) {
-            card.style.display = 'none'
-          } else {
-            card.style.display = 'block'
-          }
-        })
-      }
-      
-      function resetFilters() {
-        document.getElementById('treeTypeFilter').value = ''
-        document.getElementById('minHeightFilter').value = ''
-        document.getElementById('maxHeightFilter').value = ''
-      
-        const cards = document.querySelectorAll('.card')
-        cards.forEach((card) => {
+{% block extra_js %}
+  <script>
+    function applyFilters() {
+      const treeType = document.getElementById('treeTypeFilter').value
+      const minHeight = document.getElementById('minHeightFilter').value
+      const maxHeight = document.getElementById('maxHeightFilter').value
+    
+      const cards = document.querySelectorAll('.card')
+      cards.forEach((card) => {
+        const treeTypeText = card.querySelector('h3').textContent.trim()
+        const height = parseFloat(card.querySelector('p:nth-of-type(2)').textContent.replace('Höhe:', '').replace('m', '').trim())
+    
+        if ((treeType && treeType !== treeTypeText) || (minHeight && height < parseFloat(minHeight)) || (maxHeight && height > parseFloat(maxHeight))) {
+          card.style.display = 'none'
+        } else {
           card.style.display = 'block'
-        })
-      }
-      
-      function viewDetails(treeId) {
-        alert(`Details anzeigen für Baum ID: ${treeId}`)
-      }
-    </script>
-  </body>
-</html>
+        }
+      })
+    }
+    
+    function resetFilters() {
+      document.getElementById('treeTypeFilter').value = ''
+      document.getElementById('minHeightFilter').value = ''
+      document.getElementById('maxHeightFilter').value = ''
+    
+      const cards = document.querySelectorAll('.card')
+      cards.forEach((card) => {
+        card.style.display = 'block'
+      })
+    }
+    
+    function viewDetails(treeId) {
+      alert(`Details anzeigen für Baum ID: ${treeId}`)
+    }
+  </script>
+{% endblock %}

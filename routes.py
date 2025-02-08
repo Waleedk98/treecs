@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from logic.register import handle_register
 from logic.login import handle_login
 from logic.submit_tree import handle_submit_tree
+from logic.Email_Verification import handle_verify_email
 import logging
 
 # Setup logging
@@ -20,6 +21,11 @@ def init_routes(app):
         if current_user.is_authenticated:
             return redirect("/mainmenu")
         return redirect("/login")
+
+    #Email-Verification
+    @app.route('/verify_email/<token>')
+    def verify_email(token):
+        return handle_verify_email(token)
 
     # Register route
     @app.route("/register", methods=["GET", "POST"])

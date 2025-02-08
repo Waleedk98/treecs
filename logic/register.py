@@ -1,8 +1,19 @@
 # logic/register.py
 from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, HealthStatus, TreePhoto, CommunityContribution, AccountType
-from extensions import db, bcrypt_instance
-from flask import request, render_template, redirect, session
-from flask_login import login_user
+from extensions import db, bcrypt_instance, mail
+from flask import request, render_template, redirect, url_for, flash
+from flask_mail import Message
+from utils import generate_token
+
+def send_verification_email(user):
+    token = generate_token(user.email)
+    verify_url = url_for('verify_email', token=token, _external=True)
+    
+    msg = Message("Bitte bestätige deine E-Mail", sender="noreply@yourapp.com", recipients=[user.email])
+    msg.body = f"Klicke auf den folgenden Link, um deine E-Mail zu bestätigen: {verify_url}"
+
+    mail.send(msg)
+
 
 def handle_register():
     if request.method == "POST":
@@ -42,9 +53,9 @@ def handle_register():
             db.session.add(user_role)
             db.session.commit()
 
-            # Log in the newly registered user
-            login_user(new_user)
-            session["user_id"] = new_user.id
-            return redirect("/mainmenu")
+            send_verification_email(new_user)
+
+            flash("Registrierung erfolgreich! Bitte überprüfe deine E-Mails zur Bestätigung.", "info")
+            return redirect("/login")
 
     return render_template("register.html")

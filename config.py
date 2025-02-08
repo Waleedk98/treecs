@@ -6,6 +6,17 @@ class Config:
     UPLOAD_FOLDER = 'static/uploads/tree_photos'  # Ordner für Bilder
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
+    # Flask-Mail Konfiguration
+    MAIL_SERVER = "smtp.hs-fulda.de"
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
+    MAIL_USERNAME = "fdai7336@hs-fulda.de"
+    MAIL_PASSWORD = "PW"
+    MAIL_DEFAULT_SENDER = "noreply@deineapp.com"
+    MAIL_MAX_EMAILS = 10  
+    MAIL_ASCII_ATTACHMENTS = False
+
 class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:19x28x37x@127.0.0.1:5433/Tree'
     DEBUG = True

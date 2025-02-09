@@ -22,6 +22,7 @@ def handle_submit_tree(request):
     inclination = request.form.get("inclination")
     trunk_diameter = request.form.get("trunk_diameter")
     address = request.form.get("address")
+    tree_Notes = request.form.get("tree_notes")
 
     # Validierung der erforderlichen Felder ohne Geodaten
     required_fields = [tree_type, tree_height, inclination, trunk_diameter]
@@ -125,7 +126,7 @@ def handle_submit_tree(request):
             tree_id=newTree.id,
             user_id=current_user.id,
             contribution_type="Added Tree",
-            description=""
+            description= tree_Notes or "no Description"
         )
         db.session.add(newContribution)
         db.session.commit()

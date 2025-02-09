@@ -1,11 +1,15 @@
-from flask import request, render_template, redirect, session, jsonify
-from flask_login import login_user, logout_user, login_required, current_user
-from werkzeug.utils import secure_filename
+# Standard-Bibliotheken
 import os
+# Drittanbieter-Bibliotheken
+from flask import redirect, jsonify
+from flask_login import current_user
+from werkzeug.utils import secure_filename
+from flask import current_app
+# Lokale Module
 from functions import get_gps_data_exifread, get_address_from_coordinates
 from extensions import db, bcrypt_instance
 from models import TrustLevel, User, UserRole, Tree, Measurement, TreeType, HealthStatus, TreePhoto, CommunityContribution, AccountType
-from flask import current_app
+
 
 # Funktion, um erlaubte Dateitypen zu überprüfen
 def allowed_file(filename):

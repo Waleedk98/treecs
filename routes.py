@@ -79,10 +79,10 @@ def init_routes(app):
         return render_template('dashboard.html', trees=trees, current_user=current_user)
 
     # ✅ Profile route
-    @app.route('/meinprofil')
+    @app.route('/profile')
     @login_required
-    def meinprofil():
-        return render_template("meinprofil.html", current_user=current_user)
+    def profile():
+        return render_template("profile.html", current_user=current_user)
 
     # ✅ Update profile information
     @app.route('/update_profile', methods=['POST'])

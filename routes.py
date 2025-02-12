@@ -80,7 +80,7 @@ def init_routes(app):
 
     # ✅ Profile route
     @app.route('/profile')
-    @login_required
+    #@login_required
     def profile():
         return render_template("profile.html", current_user=current_user)
 

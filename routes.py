@@ -23,7 +23,7 @@ def init_routes(app):
         return redirect("/login")
 
     #Email-Verification
-    @app.route('/verify_email/<token>')
+    @app.route('/verify_email/<token>', methods=["GET"])
     def verify_email(token):
         return handle_verify_email(token)
 

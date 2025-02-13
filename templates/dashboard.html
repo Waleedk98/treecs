@@ -11,6 +11,7 @@
 
   <!-- Filters -->
   <div class="filter-container">
+    <!-- Existing filters -->
     <select id="treeTypeFilter">
       <option value="">Baumart wählen</option>
       <option value="Eiche">Eiche</option>
@@ -48,6 +49,17 @@
     </select>
     <input type="number" id="minHeightFilter" placeholder="Min. Höhe (m)" />
     <input type="number" id="maxHeightFilter" placeholder="Max. Höhe (m)" />
+
+    <!-- Time Filter -->
+    <input type="date" id="startDateFilter" placeholder="Startdatum" />
+    <input type="date" id="endDateFilter" placeholder="Enddatum" />
+
+    <!-- Regional Filter -->
+    <input type="text" id="regionFilter" placeholder="Region/Stadt-Name eingeben" />
+
+    <!-- Umkreis Filter (uses your current GPS coordinates) -->
+    <input type="number" id="radiusFilter" placeholder="Umkreis (km)" step="any" />
+
     <button onclick="applyFilters()">Filtern</button>
     <button onclick="resetFilters()">Zurücksetzen</button>
   </div>
@@ -55,7 +67,11 @@
   <!-- Cards -->
   <div class="card-container" id="cardContainer">
     {% for tree in trees %}
-      <div class="card">
+      <!-- Store timestamp and coordinates in data attributes for easy access -->
+      <div class="card" 
+           data-timestamp="{{ tree.timestamp.isoformat() }}" 
+           data-latitude="{{ tree.latitude }}" 
+           data-longitude="{{ tree.longitude }}">
         <!-- Card Title -->
         <h3>{{ tree.tree_type.name }}</h3>
 
@@ -102,37 +118,131 @@
 
 {% block extra_js %}
   <script>
+    // Global variable to store the user's current coordinates
+    let currentCoords = null;
+
+    // Request the user's current location as soon as the page loads
+    window.onload = function() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            currentCoords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
+            console.log("Current position obtained:", currentCoords);
+          },
+          function(error) {
+            console.error("Error obtaining location:", error);
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    // Haversine formula to calculate distance between two coordinates in km
+    function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Radius of the earth in km
+      const dLat = deg2rad(lat2 - lat1);
+      const dLon = deg2rad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    }
+
     function applyFilters() {
-      const treeType = document.getElementById('treeTypeFilter').value
-      const minHeight = document.getElementById('minHeightFilter').value
-      const maxHeight = document.getElementById('maxHeightFilter').value
-    
-      const cards = document.querySelectorAll('.card')
+      const treeType = document.getElementById('treeTypeFilter').value;
+      const minHeight = document.getElementById('minHeightFilter').value;
+      const maxHeight = document.getElementById('maxHeightFilter').value;
+      const startDateStr = document.getElementById('startDateFilter').value;
+      const endDateStr = document.getElementById('endDateFilter').value;
+      const region = document.getElementById('regionFilter').value.trim().toLowerCase();
+      const radius = document.getElementById('radiusFilter').value;
+
+      // Create Date objects if dates are provided
+      let startDate = startDateStr ? new Date(startDateStr) : null;
+      let endDate = endDateStr ? new Date(endDateStr) : null;
+      if (endDate) {
+        endDate.setHours(23, 59, 59, 999);
+      }
+
+      const cards = document.querySelectorAll('.card');
       cards.forEach((card) => {
-        const treeTypeText = card.querySelector('h3').textContent.trim()
-        const height = parseFloat(card.querySelector('p:nth-of-type(2)').textContent.replace('Höhe:', '').replace('m', '').trim())
-    
-        if ((treeType && treeType !== treeTypeText) || (minHeight && height < parseFloat(minHeight)) || (maxHeight && height > parseFloat(maxHeight))) {
-          card.style.display = 'none'
-        } else {
-          card.style.display = 'block'
+        let showCard = true;
+
+        // Filter by tree type
+        const treeTypeText = card.querySelector('h3').textContent.trim();
+        if (treeType && treeType !== treeTypeText) {
+          showCard = false;
         }
-      })
+
+        // Filter by height (Assumes the first <p> contains the height information)
+        const heightText = card.querySelector('p').textContent;
+        const height = parseFloat(heightText.replace('Höhe:', '').replace('m', '').trim());
+        if (minHeight && height < parseFloat(minHeight)) {
+          showCard = false;
+        }
+        if (maxHeight && height > parseFloat(maxHeight)) {
+          showCard = false;
+        }
+
+        // Filter by time (using the data-timestamp attribute in ISO format)
+        const timestampStr = card.getAttribute('data-timestamp');
+        const cardDate = new Date(timestampStr);
+        if (startDate && cardDate < startDate) {
+          showCard = false;
+        }
+        if (endDate && cardDate > endDate) {
+          showCard = false;
+        }
+
+        // Filter by region (search within the location text)
+        if (region) {
+          const locationText = card.querySelector('.location').textContent.toLowerCase();
+          if (!locationText.includes(region)) {
+            showCard = false;
+          }
+        }
+
+        // Filter by umkreis if radius is provided and current location is available
+        if (radius && currentCoords) {
+          const cardLat = parseFloat(card.getAttribute('data-latitude'));
+          const cardLng = parseFloat(card.getAttribute('data-longitude'));
+          const distance = getDistanceFromLatLonInKm(currentCoords.latitude, currentCoords.longitude, cardLat, cardLng);
+          if (distance > parseFloat(radius)) {
+            showCard = false;
+          }
+        }
+
+        card.style.display = showCard ? 'block' : 'none';
+      });
     }
-    
+
     function resetFilters() {
-      document.getElementById('treeTypeFilter').value = ''
-      document.getElementById('minHeightFilter').value = ''
-      document.getElementById('maxHeightFilter').value = ''
-    
-      const cards = document.querySelectorAll('.card')
+      document.getElementById('treeTypeFilter').value = '';
+      document.getElementById('minHeightFilter').value = '';
+      document.getElementById('maxHeightFilter').value = '';
+      document.getElementById('startDateFilter').value = '';
+      document.getElementById('endDateFilter').value = '';
+      document.getElementById('regionFilter').value = '';
+      document.getElementById('radiusFilter').value = '';
+
+      const cards = document.querySelectorAll('.card');
       cards.forEach((card) => {
-        card.style.display = 'block'
-      })
+        card.style.display = 'block';
+      });
     }
-    
+
     function viewDetails(treeId) {
-      alert(`Details anzeigen für Baum ID: ${treeId}`)
+      alert(`Details anzeigen für Baum ID: ${treeId}`);
     }
   </script>
 {% endblock %}

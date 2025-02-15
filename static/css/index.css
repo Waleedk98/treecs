@@ -192,3 +192,130 @@ body {
     border-radius: 10px;
     margin-bottom: 20px;
   }
+
+  /* Tutorial Popup backdrop */
+.tutorial-popup {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 200; /* Make sure it appears above other elements */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup content */
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.popup-content h2 {
+  margin-top: 0;
+}
+
+.popup-content button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  background-color: #0b79d0;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Tutorial Overlay covers the entire screen */
+.tutorial-overlay {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* semi-transparent dark overlay */
+  z-index: 300;
+  /* fallback centering (if no target position is defined) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup styling for the tutorial step */
+.tutorial-step {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 90%;
+  width: 320px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  position: absolute; /* So we can position it relative to target element */
+}
+
+.tutorial-step img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.tutorial-step p {
+  font-size: 16px;
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+
+.tutorial-buttons {
+  text-align: center;
+}
+
+.tutorial-buttons button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  margin: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.tutorial-buttons button:hover {
+  background: #0056b3;
+}
+
+/* Highlight styling for the target element */
+.highlight {
+  position: relative;
+  z-index: 350; /* Ensure it appears just below the popup */
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.8);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .tutorial-step {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 80%;
+    max-width: 300px;
+    padding: 15px;
+    font-size: 14px;
+  }
+  .tutorial-buttons button {
+    padding: 6px 10px;
+    font-size: 12px;
+    margin: 5px; /* Vertical and horizontal margin */
+  }
+}

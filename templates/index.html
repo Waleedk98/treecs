@@ -97,50 +97,269 @@
       <button class="close-modal" onclick="closeAssistant()">Schließen</button>
     </div>
   </div>
+
+  <!-- Interactive Tutorial Overlay -->
+  <div id="interactiveTutorial" class="tutorial-overlay">
+    <div class="tutorial-step">
+      <img id="tutorialImage" src="" alt="Schrittbild" style="display: none;">
+      <p id="tutorialMessage"></p>
+      <div class="tutorial-buttons">
+        <button id="tutorialPrev">Zurück</button>
+        <button id="tutorialNext">Weiter</button>
+        <button id="tutorialEnd">Beenden</button>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block extra_js %}
-  <!-- Scripts -->
+  <!-- External Scripts -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script>
-    const treeTypes = ['Eiche', 'Kiefer', 'Buche', 'Ahorn', 'Birke', 'Fichte', 'Linde', 'Esche', 'Tanne', 'Douglasie', 'Pappel', 'Ulme', 'Zeder', 'Walnussbaum', 'Kastanie', 'Mango', 'Teak', 'Mahagoni', 'Palme', 'Olivenbaum', 'Zypresse', 'Eukalyptus', 'Akazie', 'Roter Ahorn', 'Balsambaum', 'Kirschbaum', 'Apfelbaum', 'Pfefferbaum', 'Zitronenbaum', 'Kokospalme', 'Bambus']
-    
+    // --- Assistant Modal Functions ---
+    const treeTypes = ['Eiche', 'Kiefer', 'Buche', 'Ahorn', 'Birke', 'Fichte', 'Linde', 'Esche', 'Tanne', 'Douglasie', 'Pappel', 'Ulme', 'Zeder', 'Walnussbaum', 'Kastanie', 'Mango', 'Teak', 'Mahagoni', 'Palme', 'Olivenbaum', 'Zypresse', 'Eukalyptus', 'Akazie', 'Roter Ahorn', 'Balsambaum', 'Kirschbaum', 'Apfelbaum', 'Pfefferbaum', 'Zitronenbaum', 'Kokospalme', 'Bambus'];
+
     function populateLeafGallery() {
-      const gallery = document.getElementById('leafGallery')
-      gallery.innerHTML = '' // Clear existing content
+      const gallery = document.getElementById('leafGallery');
+      gallery.innerHTML = ''; // Clear existing content
       treeTypes.forEach((treeType) => {
-        const img = document.createElement('img')
-        img.src = `/static/img/leaf_images/${treeType}.jpeg`
-        img.alt = treeType
-        img.title = treeType
-        img.onclick = () => selectTreeType(treeType) // Attach click handler
-        gallery.appendChild(img)
-      })
+        const img = document.createElement('img');
+        img.src = `/static/img/leaf_images/${treeType}.jpeg`;
+        img.alt = treeType;
+        img.title = treeType;
+        img.onclick = () => selectTreeType(treeType);
+        gallery.appendChild(img);
+      });
     }
-    
+
     function openAssistant() {
-      populateLeafGallery()
-      document.getElementById('assistantModal').style.display = 'flex'
+      populateLeafGallery();
+      document.getElementById('assistantModal').style.display = 'flex';
     }
-    
+
     function closeAssistant() {
-      document.getElementById('assistantModal').style.display = 'none'
+      document.getElementById('assistantModal').style.display = 'none';
     }
-    
+
     function selectTreeType(treeType) {
-      document.getElementById('treeType').value = treeType
-      closeAssistant()
+      document.getElementById('treeType').value = treeType;
+      closeAssistant();
     }
-    
+
     document.getElementById('treeDataForm').addEventListener('submit', function (event) {
-      const files = document.getElementById('treePhotos').files
+      const files = document.getElementById('treePhotos').files;
       if (files.length !== 2) {
-        document.getElementById('photoError').style.display = 'block'
-        event.preventDefault()
-        alert('⚠️ Fehler: Bitte laden Sie genau 2 JPEG-Bilder hoch.')
+        document.getElementById('photoError').style.display = 'block';
+        event.preventDefault();
+        alert('⚠️ Fehler: Bitte laden Sie genau 2 JPEG-Bilder hoch.');
       } else {
-        document.getElementById('photoError').style.display = 'none'
+        document.getElementById('photoError').style.display = 'none';
       }
-    })
+    });
+
+   // --- Interactive Tutorial Code ---
+  // Define tutorial steps with a "position" property (either "left" or "right")
+  const tutorialSteps = [
+  {
+    target: '#treeType',
+    message: 'Schritt 1: Wählen Sie eine Baumart aus dem Dropdown oder klicken Sie auf den Assistenten ("Hilfe? Baumart hier bestimmen!").',
+    image: '/static/img/tutorial/treeType.png',
+    position: 'left'
+  },
+  {
+    target: '#treeHeight',
+    message: 'Schritt 2: Geben Sie hier die Baumhöhe in Metern ein.',
+    image: '/static/img/tutorial/treeHeight.png',
+    position: 'right'
+  },
+  {
+    target: '#inclination',
+    message: 'Schritt 3: Tragen Sie die Neigung des Baumes in Grad ein (zwischen 0 und 90).',
+    image: '/static/img/tutorial/inclination.png',
+    position: 'left'
+  },
+  {
+    target: '#trunkDiameter',
+    message: 'Schritt 4: Geben Sie den Stammdurchmesser in Zentimetern ein.',
+    image: '/static/img/tutorial/trunkDiameter.png',
+    position: 'right'
+  },
+  {
+    target: '#treeNotes',
+    message: 'Schritt 5: Fügen Sie hier optionale Notizen hinzu, falls gewünscht.',
+    image: '/static/img/tutorial/treeNotes.png',
+    position: 'left'
+  },
+  {
+    target: '#treePhotos',
+    message: 'Schritt 6: Laden Sie genau 2 JPEG-Bilder hoch, die den Baum aus dem richtigen Winkel zeigen.',
+    image: '/static/img/tutorial/treePhotos.png',
+    position: 'right'
+  }
+];
+
+let currentStep = 0;
+
+// Position the popup based on the device width.
+function positionTutorialPopup(step) {
+  const popup = document.querySelector('#interactiveTutorial .tutorial-step');
+  
+  // For mobile devices: center the popup
+  if (window.innerWidth < 600) {
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+    return;
+  }
+  
+  // For desktop: position popup relative to target
+  const targetElement = document.querySelector(step.target);
+  if (!targetElement || !popup) return;
+  
+  const rect = targetElement.getBoundingClientRect();
+  const leftOffset = 5;   // Horizontal offset for left positioning
+  const rightOffset = 10; // Horizontal offset for right positioning
+  const fixedTop = 100;   // Initial fixed vertical position
+
+  if (step.position === 'left') {
+    popup.style.position = 'absolute';
+    popup.style.top = fixedTop + 'px';
+    popup.style.left = (rect.left + window.scrollX - popup.offsetWidth - leftOffset) + 'px';
+    popup.style.transform = '';
+  } else if (step.position === 'right') {
+    popup.style.position = 'absolute';
+    popup.style.top = fixedTop + 'px';
+    popup.style.left = (rect.right + window.scrollX + rightOffset) + 'px';
+    popup.style.transform = '';
+  } else {
+    popup.style.position = 'fixed';
+    popup.style.top = '50%';
+    popup.style.left = '50%';
+    popup.style.transform = 'translate(-50%, -50%)';
+  }
+}
+
+// Adjust vertical position if the popup overlaps the target (desktop only)
+function adjustVerticalForVisibility(step) {
+  if (window.innerWidth < 600) {
+    return; // Skip adjustment on mobile since it's centered
+  }
+  const target = document.querySelector(step.target);
+  const popup = document.querySelector('#interactiveTutorial .tutorial-step');
+  if (!target || !popup) return;
+
+  const targetRect = target.getBoundingClientRect();
+  const popupRect = popup.getBoundingClientRect();
+  const margin = 10; // Minimum space between popup and target
+
+  // Calculate the vertical center of the target
+  const targetCenterY = targetRect.top + targetRect.height / 2;
+  // If the target's center is covered by the popup, adjust the popup's top position
+  if (targetCenterY >= popupRect.top && targetCenterY <= popupRect.bottom) {
+    let newTop = targetRect.top - popupRect.height - margin;
+    // If newTop would be off-screen, place the popup below the target
+    if (newTop < 0) {
+      newTop = targetRect.bottom + margin;
+    }
+    popup.style.top = (newTop + window.scrollY) + 'px';
+  }
+}
+
+function showStep(stepIndex) {
+  const step = tutorialSteps[stepIndex];
+
+  // Remove existing highlight classes (desktop only)
+  if (window.innerWidth >= 600) {
+    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+  }
+
+  // Highlight the target element on desktop only; skip on mobile.
+  const targetElement = document.querySelector(step.target);
+  if (targetElement) {
+    if (window.innerWidth >= 600) {
+      targetElement.classList.add('highlight');
+    }
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Update message and image
+  document.getElementById('tutorialMessage').innerText = step.message;
+  const tutorialImage = document.getElementById('tutorialImage');
+  if (step.image) {
+    tutorialImage.src = step.image;
+    tutorialImage.style.display = 'block';
+  } else {
+    tutorialImage.style.display = 'none';
+  }
+
+  // Position popup and adjust vertical if needed (desktop only)
+  positionTutorialPopup(step);
+  if (window.innerWidth >= 600) {
+    adjustVerticalForVisibility(step);
+  }
+  
+  // Hide "Weiter" button on the last step, show it otherwise.
+  if (stepIndex === tutorialSteps.length - 1) {
+    document.getElementById('tutorialNext').style.display = 'none';
+  } else {
+    document.getElementById('tutorialNext').style.display = 'inline-block';
+  }
+  
+  // Optionally, hide "Zurück" button on the first step.
+  if (stepIndex === 0) {
+    document.getElementById('tutorialPrev').style.display = 'none';
+  } else {
+    document.getElementById('tutorialPrev').style.display = 'inline-block';
+  }
+}
+
+// Expose start function globally.
+window.startInteractiveTutorial = function() {
+  currentStep = 0;
+  document.getElementById('interactiveTutorial').style.display = 'block';
+  showStep(currentStep);
+};
+
+// Navigation button events.
+document.getElementById('tutorialNext').addEventListener('click', function() {
+  if (currentStep < tutorialSteps.length - 1) {
+    currentStep++;
+    showStep(currentStep);
+  }
+});
+
+document.getElementById('tutorialPrev').addEventListener('click', function() {
+  if (currentStep > 0) {
+    currentStep--;
+    showStep(currentStep);
+  }
+});
+
+document.getElementById('tutorialEnd').addEventListener('click', function() {
+  endTutorial();
+});
+
+// End the tutorial.
+function endTutorial() {
+  document.getElementById('interactiveTutorial').style.display = 'none';
+  if (window.innerWidth >= 600) {
+    document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+  }
+  localStorage.setItem('interactiveTutorialShown', 'true');
+}
+
+// Initialize tutorial if not shown before.
+function initTutorial() {
+  if (!localStorage.getItem('interactiveTutorialShown')) {
+    window.startInteractiveTutorial();
+  }
+}
+
+if (document.readyState !== 'loading') {
+  initTutorial();
+} else {
+  document.addEventListener('DOMContentLoaded', initTutorial);
+}
   </script>
 {% endblock %}

@@ -1,0 +1,149 @@
+/* CSS Variables for easy customization */
+:root {
+    --primary-color: #4CAF50;
+    --primary-color-dark: #45a049;
+    --background-light: #ffffff;
+    --text-color: #333;
+    --input-bg: #f9f9f9;
+    --border-color: #ccc;
+    --gradient-start: #e6ffe6;
+    --gradient-end: #ccffcc;
+}
+  
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+  
+body {
+    font-family: 'DM Serif Text', serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    padding: 20px;
+}
+  
+/* Container for the login form */
+.login-container {
+    background: var(--background-light);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+  
+/* Logo styling */
+.logo {
+    margin-bottom: 20px;
+}
+.logo img {
+    max-width: 120px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+  
+/* Heading */
+h2 {
+    margin-bottom: 20px;
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    text-align: center; 
+}
+  
+/* Form styles */
+form {
+    width: 100%;
+}
+  
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+  
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+    background: var(--input-bg);
+    transition: border-color 0.3s ease;
+}
+  
+input:focus,
+select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+  
+/* Button styling */
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    color: #fff;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: 'DM Serif Text', serif;
+}
+  
+button:hover {
+    background: var(--primary-color-dark);
+}
+  
+/* Link styling */
+a {
+    display: block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+  
+a:hover {
+    text-decoration: underline;
+}
+  
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .login-container {
+        padding: 30px;
+        margin: 0 10px;
+    }
+}
+  
+/* Secondary button styling for registration */
+.btn-secondary {
+    display: block;
+    margin: 10px auto; /* Centers the link */
+    padding: 12px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #2196F3; /* Change this to any color you prefer */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    font-family: 'DM Serif Text', serif;
+    text-decoration: none;
+}
+  
+.btn-secondary:hover {
+    background-color: #1976D2;
+}

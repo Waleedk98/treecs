@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Baumbiomasse-Gleichung Erfassen{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/addtree.css') }}" />
+{% endblock %}
+
+{% block content %}
+  <h1>Baumbiomasse-Gleichung Erfassen</h1>
+
+  <!-- Form for Tree Biomass Equation -->
+  <form id="biomassEquationForm" method="POST" action="/submit_biomass_equation">
+    <!-- Species Input -->
+    <label for="species">
+      Baumart:
+      <span class="info-icon" data-tooltip="Geben Sie die Baumart ein.">i</span>
+    </label>
+    <input type="text" id="species" name="species" placeholder="z. B. Eiche" required />
+
+    <!-- Equation Form Input -->
+    <label for="equation">
+      Gleichungsform:
+      <span class="info-icon" data-tooltip="Geben Sie die Gleichung in Form von Y=Ax^B ein.">i</span>
+    </label>
+    <input type="text" id="equation" name="equation" placeholder="z. B. Y=Ax^B" required />
+
+    <!-- Float Inputs A-D -->
+    {% for letter in ['A', 'B', 'C', 'D'] %}
+      <label for="{{ letter }}">
+        Wert für {{ letter }}:
+        <span class="info-icon" data-tooltip="Numerischer Wert für {{ letter }} eingeben.">i</span>
+      </label>
+      <input type="number" id="{{ letter }}" name="{{ letter }}" step="any" required />
+    {% endfor %}
+
+    <!-- Scientific Notation Inputs E-G -->
+    {% for letter in ['E', 'F', 'G'] %}
+      <label for="{{ letter }}">
+        Wert für {{ letter }} (z. B. -9E-05):
+        <span class="info-icon" data-tooltip="Eingabe mit wissenschaftlicher Notation erlaubt (z. B. -9E-05).">i</span>
+      </label>
+      <input type="text" id="{{ letter }}" name="{{ letter }}" pattern="^-?\d+(\.\d+)?(E-?\d+)?$" required />
+    {% endfor %}
+
+    <!-- X Unit Input -->
+    <label for="x_unit">
+      Einheit für x:
+      <span class="info-icon" data-tooltip="Geben Sie die Einheit für x an (z. B. DHT, cm², in²).">i</span>
+    </label>
+    <input type="text" id="x_unit" name="x_unit" placeholder="z. B. DHT, cm², in²" required />
+
+    <!-- Y Unit Input -->
+    <label for="y_unit">
+      Einheit für Y:
+      <span class="info-icon" data-tooltip="Geben Sie die Einheit für Y an (z. B. AGB(kg), AGB(lb)).">i</span>
+    </label>
+    <input type="text" id="y_unit" name="y_unit" placeholder="z. B. AGB(kg), AGB(lb)" required />
+
+    <!-- Submit Button -->
+    <button type="submit">Gleichung speichern</button>
+  </form>
+{% endblock %}

@@ -48,12 +48,14 @@ canvas {
 
 /* Menu Container */
 .menu-container {
+    max-height: 80vh;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Changed from center */
-    min-height: 80vh; /* Changed from fixed height */
-    padding: 10px 20px 10px; /* Reduced top padding */
+    padding: 10px 20px;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
 }
 
 /* Logo */
@@ -101,3 +103,24 @@ h1 {
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Custom scrollbar for Webkit browsers */
+.menu-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.menu-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+}
+
+.menu-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Ensure mobile usability */
+@media (max-width: 768px) {
+    .menu-container {
+        max-height: 75vh;
+        padding: 10px;
+    }
+}

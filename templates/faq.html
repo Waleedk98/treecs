@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQs - Baummessungs-App{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/faq.css') }}" />
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+      <h1 class="center"><b>Häufig gestellte Fragen (FAQs)</b></h1>
+
+      <div class="faq-container">
+
+          <!-- 1: Warum soll ich Bäume messen? -->
+          <div class="faq">
+              <div class="question">
+                  <b>Warum sollte ich Bäume messen und Daten in die App eingeben?</b>
+                  <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="answer">
+                  Unser Projekt ist ein <b>Citizen-Science-Projekt</b>, das sich mit der wissenschaftlichen Untersuchung der CO₂-Speicherung durch Bäume befasst. Ihre gemessenen Baumdaten helfen dabei:
+                  <ul>
+                      <li>🌍 <b>Den Beitrag von Bäumen zur CO₂-Reduktion zu berechnen</b></li>
+                      <li>📊 <b>Daten für Umwelt- und Klimaforschung zu sammeln</b></li>
+                      <li>🌱 <b>Die Bedeutung von Bäumen für Luftqualität und Biodiversität zu dokumentieren</b></li>
+                  </ul>
+              </div>
+          </div>
+
+          <!-- 2: Welche Apps kann ich zum Messen nutzen? -->
+          <div class="faq">
+              <div class="question">
+                  <b>Welche Apps kann ich zum Messen von Bäumen verwenden?</b>
+                  <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="answer">
+                  Sie können jede geeignete App nutzen, aber wir empfehlen:
+                  <ul>
+                      <li>📱 <b>Arboreal (iOS)</b> – Präzise Messung der Baumhöhe</li>
+                      <li>📱 <b>Aptoide (Android)</b> – Open-Source-Alternative</li>
+                      <li>📐 <b>Manuelle Messung</b> mit einem Höhenmessgerät (Hypsometer)</li>
+                  </ul>
+              </div>
+          </div>
+
+          <!-- 3: Wie messe ich einen Baum korrekt? -->
+          <div class="faq">
+              <div class="question">
+                  <b>Wie messe ich einen Baum mit Arboreal oder Aptoide?</b>
+                  <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="answer">
+                  <b>Schritt-für-Schritt Anleitung:</b>
+                  <ul>
+                      <li>📍 <b>Standortwahl:</b> Entfernen Sie sich vom Baum um eine Distanz, die ungefähr der Baumhöhe entspricht.</li>
+                      <li>📐 <b>Rechter Winkel:</b> Stellen Sie sicher, dass Sie den Baum in einem <b>90°-Winkel</b> messen.</li>
+                      <li>📱 <b>Arboreal/Aptoide App öffnen:</b> Wählen Sie den <b>Höhenmessmodus</b>.</li>
+                      <li>📌 <b>Baumspitze erfassen:</b> Richten Sie die Kamera auf die höchste sichtbare Stelle.</li>
+                      <li>🔽 <b>Fußpunkt erfassen:</b> Richten Sie die Kamera auf die Basis des Baumes.</li>
+                      <li>📊 <b>Messung speichern:</b> Die App berechnet die Höhe automatisch.</li>
+                      <li>📝 <b>Werte in unsere App eintragen:</b> Geben Sie Höhe, Stammdurchmesser und GPS-Koordinaten ein.</li>
+                  </ul>
+              </div>
+          </div>
+
+          <!-- 4: Kann ich meine Daten auch ohne App messen? -->
+          <div class="faq">
+              <div class="question">
+                  <b>Kann ich einen Baum auch ohne App messen?</b>
+                  <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="answer">
+                  Ja, mit einer einfachen <b>manuellen Methode</b>:
+                  <ol>
+                      <li>📍 <b>Entfernen Sie sich</b> vom Baum um eine bekannte Distanz (z. B. 10m).</li>
+                      <li>📐 <b>Halten Sie einen Stock im rechten Winkel</b> (gleiche Länge wie Ihre ausgestreckte Armlänge).</li>
+                      <li>👀 <b>Visieren Sie die Baumspitze über den Stock an</b>, bis die Spitze mit dem Stockende übereinstimmt.</li>
+                      <li>📏 <b>Die geschätzte Baumhöhe ist die Entfernung</b>, die Sie zum Baum haben.</li>
+                  </ol>
+              </div>
+          </div>
+
+        <!-- Frage 6: Genauigkeit der Messungen -->
+        <div class="faq">
+            <div class="question">
+                <b>Wie genau sind diese Baum-Messungen?</b>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="answer">
+                Die Genauigkeit hängt vom Winkel, Ihren Sensoren (Smartphone/Tablet), Wetter und Abstand ab. In der Regel sind <b>Abweichungen kleiner als 5%</b> möglich. Achten Sie auf:
+                <ul>
+                    <li><b>Stabilität</b>: Halten Sie das Gerät ruhig.</li>
+                    <li><b>Klares Sichtfeld</b>: Keine Hindernisse oder zu starker Wind.</li>
+                    <li><b>Aktuelle Sensorik</b>: Moderne Geräte liefern genauere Ergebnisse.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Frage 7: Ist eure App wirklich kostenlos? -->
+        <div class="faq">
+            <div class="question">
+                <b>Ist eure App wirklich kostenlos?</b>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="answer">
+                Ja! Unser Projekt ist <b>komplett kostenlos</b> und lebt von den Beiträgen der Community. Wir finanzieren uns über <b>Forschungsstipendien</b> und <b>Fördergelder</b>, nicht über Nutzungsgebühren.
+            </div>
+        </div>
+
+        <!-- Frage 8: Kann ich mehrere Bäume hinzufügen? -->
+        <div class="faq">
+            <div class="question">
+                <b>Kann ich mehrere Bäume messen und in der App speichern?</b>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="answer">
+                Selbstverständlich! Sie können <b>unbegrenzt viele Bäume</b> erfassen und ihre Daten verwalten. Das hilft uns, ein umfassenderes Bild zu erstellen.
+            </div>
+        </div>
+
+        <!-- Frage 9: Wo werden die Daten gespeichert? -->
+        <div class="faq">
+            <div class="question">
+                <b>Wo werden meine Messdaten gespeichert?</b>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="answer">
+                Alle Daten werden in einer <b>gesicherten Datenbank</b> abgelegt und nur für wissenschaftliche Auswertungen genutzt. Wir geben keine personenbezogenen Daten an Dritte weiter.
+            </div>
+        </div>
+
+        <!-- Frage 10: Muss ich ein Foto hochladen? -->
+        <div class="faq">
+            <div class="question">
+                <b>Muss ich ein Foto vom Baum hochladen?</b>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="answer">
+                Ja, wir brauchen mindestens <b>zwei Fotos</b> des Baumes, um seinen Standort und seine Art leicht bestimmen zu können. Sie können auch <b>weitere Fotos</b> hinzufügen, um den Baum besser zu dokumentieren.
+            </div>
+        </div>
+
+      </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.faq .question').forEach(item => {
+            item.addEventListener('click', function () {
+                let answer = this.nextElementSibling;
+                answer.classList.toggle('show');
+                this.querySelector("i").classList.toggle('rotate');
+            });
+        });
+    });
+</script>
+{% endblock %}

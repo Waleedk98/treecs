@@ -11,8 +11,8 @@ class Config:
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USE_SSL = False
-    MAIL_USERNAME = "fdai7336@hs-fulda.de"
-    MAIL_PASSWORD = "PW"
+    MAIL_USERNAME = "fdlt3859@hs-fulda.de"
+    MAIL_PASSWORD = "RoFulda@99"
     MAIL_DEFAULT_SENDER = "noreply@deineapp.com"
     MAIL_MAX_EMAILS = 10  
     MAIL_ASCII_ATTACHMENTS = False

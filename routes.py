@@ -54,6 +54,18 @@ def init_routes(app):
     @login_required
     def index():
         return render_template("index.html")
+    
+    # Add Tree route
+    @app.route("/addtree")
+    @login_required
+    def addtree():
+        return render_template("addtree.html", current_user=current_user)
+    
+    # FAQ route
+    @app.route("/faq")
+    @login_required
+    def faq():
+        return render_template("faq.html", current_user=current_user)
 
     # ✅ Submit tree data route (Now directly jumps to Dashboard)
     @app.route("/submit_tree_data", methods=["POST"])

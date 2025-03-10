@@ -166,3 +166,22 @@ class CommunityContribution(db.Model):
 
     def __repr__(self):
         return f"<CommunityContribution id={self.id} tree_id={self.tree_id}>"
+    
+class TreeBiomass(db.Model):
+    __tablename__ = 'tree_biomass'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    scientific_species = db.Column(db.String(128), nullable=False, unique=True)
+    equation_form = db.Column(db.String(256), nullable=False)
+    A = db.Column(db.Float, nullable=True)
+    B = db.Column(db.Float, nullable=True)
+    C = db.Column(db.Float, nullable=True)
+    D = db.Column(db.Float, nullable=True)
+    E = db.Column(db.Float, nullable=True)
+    F = db.Column(db.Float, nullable=True)
+    G = db.Column(db.Float, nullable=True)
+    x_variable = db.Column(db.String(64), nullable=False, default='dbh')
+    Y = db.Column(db.String(64), nullable=False, default='ttb')
+
+    def __repr__(self):
+        return f"<TreeBiomass id={self.id} species={self.species} equation_form={self.equation_form}>"

@@ -1,4 +1,4 @@
---TRUNCATE TABLE account_types CASCADE;
+--TRUNCATE TABLE tree_types CASCADE;
 --SELECT * FROM measurements
 --SELECT * From user_roles
-SELECT * FROM community_contributions
+--SELECT * FROM tree_types

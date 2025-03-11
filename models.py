@@ -75,7 +75,6 @@ class TreeType(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False, unique=True)
     true_type = db.Column(db.String(128), nullable=False)
-    co2_compensation_rate = db.Column(db.Numeric(10, 2), nullable=False, default=0.00)
 
     def __repr__(self):
         return f"<TreeType id={self.id} name={self.name}>"

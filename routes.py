@@ -158,30 +158,45 @@ def init_routes(app):
     def aboutus():
         return render_template("aboutus.html")
 
-    # ✅ CO₂ Analysis Route (Still exists for manual access)
     @app.route('/analysis/<int:tree_id>', methods=['GET'])
     @login_required
     def analysis(tree_id):
         try:
             tree = Tree.query.get_or_404(tree_id)
-            tree_type = TreeType.query.get(tree.tree_type_id)
+        # Get the latest measurement if available; otherwise, use the tree's stored values.
             measurement = Measurement.query.filter_by(tree_id=tree.id).order_by(Measurement.collected_at.desc()).first()
+            trunk_diameter = float(measurement.trunk_diameter) if measurement else float(tree.trunk_diameter)
 
-            def calculate_co2_absorption(height, diameter, type_factor):
-                try:
-                    return round(float(height) * float(diameter) * float(type_factor) * 0.5, 2)
-                except (TypeError, ValueError):
-                    return 0.0  # Fallback if values are invalid
+        # Parameter arrays for the three tree types:
+        # 0: Birke, 1: Fichte, 2: Kiefer
+            parameters = [
+                [0.8, -1.0119, 0.4244, 0.0075, -4e-05, 1e-07],  # Birke
+                [10, -1.3638, 0.4216, 0.0041, -3e-05, 1e-07],     # Fichte
+                [1.5, -0.8569, 0.3074, 0.003, -3e-05, 1e-07]       # Kiefer
+            ]
 
-            # Assign values with fallback options
-            type_factor = tree_type.co2_compensation_rate if tree_type else 1.0
-            tree_height = measurement.height if measurement else tree.tree_height
-            trunk_diameter = measurement.trunk_diameter if measurement else tree.trunk_diameter
-            co2_absorbed = calculate_co2_absorption(tree_height, trunk_diameter, type_factor)
+            # Map tree type names to their corresponding index.
+            baumart_mapping = {
+                "Birke": 0,
+                "Fichte": 1,
+                "Kiefer": 2
+            }
 
-            # Save CO₂ absorption value to DB
-            tree.co2_compensation_rate = co2_absorbed
-            db.session.commit()
+            tree_type_name = tree.tree_type.name
+            if tree_type_name not in baumart_mapping:
+                flash("Analyse funktioniert nur für Birke, Fichte oder Kiefer.", "danger")
+                return redirect(url_for('dashboard'))
+
+            index = baumart_mapping[tree_type_name]
+            A, B, C, D, E, F = parameters[index]
+
+            # Use the trunk diameter as x in the formula.
+            x = trunk_diameter
+
+            # Compute CO₂ absorption using the polynomial formula:
+            # Y = A + B^x + C * x^2 + D * x^3 + E * x^4 + F * x^5
+            Y = A + (B ** x) + C * (x ** 2) + D * (x ** 3) + E * (x ** 4) + F * (x ** 5)
+            co2_absorbed = round(Y, 2)
 
             flash("Analyse abgeschlossen!", "success")
             return render_template(

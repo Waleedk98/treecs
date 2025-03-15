@@ -12,7 +12,7 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USE_SSL = False
     MAIL_USERNAME = "fdlt3859@hs-fulda.de"
-    MAIL_PASSWORD = "RoFulda@99"
+    MAIL_PASSWORD = "xyz"
     MAIL_DEFAULT_SENDER = "noreply@deineapp.com"
     MAIL_MAX_EMAILS = 10  
     MAIL_ASCII_ATTACHMENTS = False

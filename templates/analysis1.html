@@ -19,32 +19,26 @@
       <h2>🌳 Dein Baum wächst mit CO₂!</h2>
       <div class="tree-container" id="treeImage">🌱</div>
 
-      <p></p>
-
       <h2>🌍 Wie viel CO₂ speichert dein Baum?</h2>
       <div class="info-box">
           <p><strong>Dieser Baum speichert:</strong> {{ co2_absorbed }} kg CO₂ pro Jahr.</p>
       </div>
 
-      <p></p>
-      <p></p>
-
+      <!-- Interactive CO₂ Reduction Visualization -->
       <h3>Interaktive CO₂-Reduktions-Simulation</h3>
       <p>
         Bewege den Schieberegler, um zu sehen, wie viel CO₂ dein Baum im Laufe der Zeit absorbiert – und
         wie viele Kilometer Autofahrt (bei ca. 0,16 kg CO₂ pro km) dadurch ausgeglichen würden.
       </p>
-      <label for="yearSlider">Jahre: <span id="yearValue">0</span> (CO₂: <span id="sliderCo2">0</span> kg)</label>
+      <label for="yearSlider">Jahre: <span id="yearValue">0</span></label>
       <input type="range" id="yearSlider" min="0" max="20" value="0" />
       <div id="growthVisualization" class="visualization">
           <div id="treeVisual" class="treeVisual">🌱</div>
           <div id="co2Display" class="co2Display">0 kg CO₂ gespeichert</div>
       </div>
       <div id="carComparison" class="comparison">
-          <p>Das entspricht ungefähr <strong><span id="kmOffset">0</span> km Autofahrt.</strong></p>
+          <p>Das entspricht ungefähr <span id="kmOffset">0</span> km Autofahrt.</p>
       </div>
-
-      <p></p>
 
       <!-- Social Media Share Section Using Bootstrap Icons -->
       <div class="share-container">
@@ -53,6 +47,7 @@
               <a id="shareFacebook" href="#" target="_blank" title="Auf Facebook teilen">
                 <i class="bi bi-facebook"></i>
               </a>
+              <!-- Replaced Twitter with Instagram -->
               <a id="shareInstagram" href="https://www.instagram.com/yourusername" target="_blank" title="Auf Instagram teilen">
                 <i class="bi bi-instagram"></i>
               </a>
@@ -77,15 +72,14 @@
 {% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-      // Initialize calculatedCO2 with the server-provided value
-      let calculatedCO2 = parseFloat("{{ co2_absorbed }}");
+      const annualCo2 = parseFloat("{{ co2_absorbed }}");
 
       // Tree Growth Animation (Static Overview)
       const treeContainer = document.getElementById("treeImage");
-      if (calculatedCO2 > 30) {
+      if (annualCo2 > 30) {
           treeContainer.innerHTML = "🌳";
           treeContainer.style.transform = "scale(1.5)";
-      } else if (calculatedCO2 > 15) {
+      } else if (annualCo2 > 15) {
           treeContainer.innerHTML = "🌲";
           treeContainer.style.transform = "scale(1.2)";
       } else {
@@ -114,7 +108,6 @@
       const treeVisual = document.getElementById("treeVisual");
       const co2Display = document.getElementById("co2Display");
       const kmOffsetElement = document.getElementById("kmOffset");
-      const sliderCo2Display = document.getElementById("sliderCo2");
 
       function updateGrowthSimulation() {
           const years = parseInt(yearSlider.value);
@@ -132,12 +125,11 @@
               treeVisual.style.transform = "scale(1.5)";
           }
 
-          // Calculate cumulative CO₂ absorption over the years using calculatedCO2
-          const cumulativeCO2 = (calculatedCO2 * years).toFixed(1);
+          // Calculate cumulative CO₂ absorption over the years
+          const cumulativeCO2 = (annualCo2 * years).toFixed(1);
           co2Display.textContent = cumulativeCO2 + " kg CO₂ gespeichert";
-          sliderCo2Display.textContent = cumulativeCO2; // Update slider CO₂ display
 
-          // Compare with car emissions (approx. 0.16 kg CO₂ per km)
+          // Compare with car emissions (approx. 0,16 kg CO₂ per km)
           const averageCarEmissionPerKm = 0.16;
           const kmOffset = (cumulativeCO2 / averageCarEmissionPerKm).toFixed(0);
           kmOffsetElement.textContent = kmOffset;
@@ -148,47 +140,15 @@
 
       // Social Media Share Links Setup
       function updateShareLinks() {
+          // Use the current page URL for sharing.
           const shareUrl = encodeURIComponent(window.location.href);
           const text = encodeURIComponent("Schau dir an, wie mein Baum CO₂ reduziert und wie viele Kilometer Autofahrt das ausgleicht!");
           document.getElementById("shareFacebook").href = "https://www.facebook.com/sharer/sharer.php?u=" + shareUrl;
+          // For Instagram, we are linking to the profile since Instagram doesn't support web sharing
           document.getElementById("shareLinkedIn").href = "https://www.linkedin.com/sharing/share-offsite/?url=" + shareUrl;
           document.getElementById("shareWhatsApp").href = "https://api.whatsapp.com/send?text=" + text + "%20" + shareUrl;
       }
       updateShareLinks();
-
-      // CO₂ Calculation Function
-      function berechneY() {
-          const baumart = document.getElementById("baumart").value;
-          const x = parseFloat(document.getElementById("x").value);
-          if (isNaN(x)) {
-              alert("Bitte geben Sie einen gültigen Durchmesser ein.");
-              return;
-          }
-
-          // Parameter arrays for the three tree types:
-          // 0: Birke, 1: Fichte, 2: Kiefer
-          const parameter = [
-              [0.8, -1.0119, 0.4244, 0.0075, -4E-05, 1E-07], // Birke
-              [10, -1.3638, 0.4216, 0.0041, -3E-05, 1E-07],   // Fichte
-              [1.5, -0.8569, 0.3074, 0.003, -3E-05, 1E-07]     // Kiefer
-          ];
-
-          const A = parameter[baumart][0];
-          const B = parameter[baumart][1];
-          const C = parameter[baumart][2];
-          const D = parameter[baumart][3];
-          const E = parameter[baumart][4];
-          const F = parameter[baumart][5];
-
-          const Y = A + Math.pow(B, x) + C * Math.pow(x, 2) + D * Math.pow(x, 3) + E * Math.pow(x, 4) + F * Math.pow(x, 5);
-
-          calculatedCO2 = Y; // Update the global calculatedCO2 variable
-          document.getElementById("ergebnis").innerText = Y.toFixed(4);
-          updateGrowthSimulation(); // Update simulation with the new calculated value
-      }
-
-      // Attach event listener to the Berechnen button
-      document.getElementById("berechnenBtn").addEventListener("click", berechneY);
   });
 </script>
 {% endblock %}

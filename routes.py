@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, session, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from datetime import datetime
-from models import User, Tree, TreeType, Measurement
+from models import User, Tree, TreeType, Measurement, TreeBiomass
 from extensions import db, bcrypt_instance
 from sqlalchemy.orm import joinedload
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,6 +10,7 @@ from logic.login import handle_login
 from logic.submit_tree import handle_submit_tree
 from logic.Email_Verification import handle_verify_email
 import logging
+import re
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -210,3 +211,44 @@ def init_routes(app):
             logging.error(f"Fehler bei der Analyse: {e}")
             flash("Ein Fehler ist aufgetreten!", "danger")
             return redirect(url_for('dashboard'))
+        
+    def parse_scientific_notation(value):
+        if re.match(r"^-?\d+(\.\d+)?(E-?\d+)?$", value, re.IGNORECASE):
+            return float(value)
+        return None  # Falls der Wert ungültig ist
+
+    
+    @app.route('/submit_biomass_equation', methods=['POST'])
+    def submit_biomass_equation():
+        try:
+            species = request.form['species']
+            equation_form = request.form['equation']
+            A = parse_scientific_notation(request.form['A'])
+            B = parse_scientific_notation(request.form['B'])
+            C = parse_scientific_notation(request.form['C'])
+            D = parse_scientific_notation(request.form['D'])
+            E = parse_scientific_notation(request.form['E'])
+            F = parse_scientific_notation(request.form['F'])
+            G = parse_scientific_notation(request.form['G'])
+            x_unit = request.form['x_unit']
+            y_unit = request.form['y_unit']
+
+            newTreeBiomass = TreeBiomass(
+                scientific_species=species,
+                equation_form=equation_form,
+                A=A, B=B, C=C, D=D, E=E, F=F, G=G,
+                x_variable=x_unit,
+                Y=y_unit
+            )
+
+            db.session.add(newTreeBiomass)
+            db.session.commit()
+            
+            entry = TreeBiomass.query.filter_by(scientific_species=species).first()
+
+            flash("Erfolgreich gespeichert!", "success")
+            return redirect(url_for('mainmenu'))
+
+        except Exception as e:
+            flash(f"Fehler: {str(e)}", "danger")
+            return redirect(url_for('addtree'))

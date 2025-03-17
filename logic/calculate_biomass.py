@@ -29,15 +29,32 @@ def calculate_biomass(tree_id):
     equation_form = biomass_formula.equation_form
 
     # Die passende Berechnungsformel anwenden
-    if equation_form == "Y = A * x^B":
-        biomass = A * (dbh ** B)
-    elif equation_form == "Y = A + B * x + C * x^2":
-        biomass = A + B * dbh + C * (dbh ** 2)
-    elif equation_form == "Y = e^(A + B * ln(x) + (C/2))":
-        biomass = exp(A + B * log(dbh) + (C / 2))
-    elif equation_form == "Y = A * x^B + C * x^D":
-        biomass = (A * (dbh ** B)) + (C * (dbh ** D))
+    
+    if equation_form == "Y=A+Bx+Cx^2+Dx^3+Ex^4+Fx^5" & species_name == "Picea abies" | equation_form == "Y=A+Bx+Cx^2+Dx^3+Ex^4+Fx^5" & species_name == "Pinus sylvestris":
+        biomass = biomass = A + B * dbh + C * (dbh ** 2) + D * (dbh ** 3) + E * (dbh ** 4) + F * (dbh ** 5)
+        
     else:
         return None  # Falls eine unbekannte Formel gespeichert wurde
 
     return biomass
+
+def calculate_carbon_storage(tree_id):
+    # Biomasse berechnen
+    biomass = calculate_biomass(tree_id)
+    if biomass is None:
+        return None  # Falls keine Biomasse berechnet werden kann
+    
+    # Baumdaten abrufen
+    tree = db.session.query(Tree).filter_by(id=tree_id).first()
+    if not tree:
+        return None  # Falls der Baum nicht existiert
+
+    # Kohlenstoffspeicherung berechnen
+    carbon_storage = biomass * 0.5  
+
+    # Begrenzung für große Bäume (max. 40 kg C pro cm d.b.h. Wachstum ab 7.500 kg C)
+    if carbon_storage > 7500:
+        max_sequestration = 40 * tree.trunk_diameter
+        carbon_storage = min(carbon_storage, 7500 + max_sequestration)
+
+    return carbon_storage
